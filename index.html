@@ -213,6 +213,23 @@
                 <p class="tagline" data-lang="sr">Profesionalni najam zvuka i svetla</p>
                 <p class="tagline" data-lang="ru">Профессиональная аренда звука и света</p>
             </div>
+            <!-- Бургер-иконка -->
+<div class="burger" id="burger">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+<!-- Навигация -->
+<nav class="mobile-nav" id="mobileNav">
+  <ul>
+    <li><a href="#home">Главная</a></li>
+    <li><a href="#about">О нас</a></li>
+    <li><a href="#services">Услуги</a></li>
+    <li><a href="#contact">Контакты</a></li>
+  </ul>
+</nav>
+
             <nav>
                 <ul>
                     <li><a href="index.html" class="active" data-lang="en">Home</a></li>
@@ -522,6 +539,16 @@
             this.href = url.toString();
         });
     });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const burger = document.getElementById('burger');
+    const mobileNav = document.getElementById('mobileNav');
+
+    burger.addEventListener('click', () => {
+      mobileNav.classList.toggle('open');
+    });
+  });
 </script>
 
 </body>
