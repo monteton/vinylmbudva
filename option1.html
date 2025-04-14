@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+// Исправленная функция для работы с языком
+function handleLanguage() {
+    // Проверяем параметр URL (?lang=)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    
+    // Проверяем сохраненный язык
+    const savedLang = localStorage.getItem('vinylLang');
+    
+    // Определяем язык браузера
+    const browserLang = navigator.language.slice(0, 2);
+    
+    // Устанавливаем приоритет: URL > Saved > Browser > Default (en)
+    const lang = ['en', 'sr', 'ru'].includes(urlLang) ? urlLang :
+                 savedLang || (['en', 'sr', 'ru'].includes(browserLang) ? browserLang : 'en');
+    
+    // Сохраняем выбранный язык
+    localStorage.setItem('vinylLang', lang);
+    document.documentElement.lang = lang;
+    
+    // Обновляем кнопки
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    
+    // Обновляем контент
+    document.querySelectorAll('[data-lang]').forEach(el => {
+        el.style.display = el.dataset.lang === lang ? 
+            (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ? 'block' : 
+             el.classList.contains('btn') ? 'inline-block' : 'block') : 'none';
+    });
+    
+    // Обновляем все ссылки на сайте
+    document.querySelectorAll('a:not([href^="#"])').forEach(a => {
+        const url = new URL(a.href);
+        url.searchParams.set('lang', lang);
+        a.href = url.toString();
+    });
+}
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', handleLanguage);
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinyl-M | Audio Equipment</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Стили для баннера */
+        .page-hero {
+            background: url('images/banner2.png') center/cover no-repeat;
+            padding: 120px 0;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            margin-bottom: 40px;
+        }
+        
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 0;
+        }
+        
+        .page-hero h2 {
+            position: relative;
+            z-index: 1;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* Стили для категорий аудио оборудования */
+        .category {
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+        }
+        
+        /* Фоны для разных категорий аудио оборудования */
+        .category:nth-child(1) { /* SPEAKERS */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/audio-speakers-bg.jpg') center/cover no-repeat;
+        }
+        
+        .category:nth-child(2) { /* MIXING CONSOLES */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/audio-mixing-bg.jpg') center/cover no-repeat;
+        }
+        
+        .category:nth-child(3) { /* MICROPHONES */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/audio-mics-bg.jpg') center/cover no-repeat;
+        }
+        
+        .category:nth-child(4) { /* AUDIO MONITORING */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/audio-monitoring-bg.jpg') center/cover no-repeat;
+        }
+        
+        .category:nth-child(5) { /* BACKLINE */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/audio-backline-bg.jpg') center/cover no-repeat;
+        }
+        
+        .category h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .models {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .model {
+            background: rgba(255,255,255,0.1);
+            padding: 12px 15px;
+            border-radius: 5px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .model:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="sr">SR</button>
+        <button class="lang-btn" data-lang="ru">RU</button>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>VINYL-<span>M</span></h1>
+                <p class="tagline" data-lang="en">Premium Audio Equipment</p>
+                <p class="tagline" data-lang="sr">Profesionalna audio oprema</p>
+                <p class="tagline" data-lang="ru">Профессиональное аудио оборудование</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" data-lang="en">Home</a></li>
+                    <li><a href="index.html" data-lang="sr">Početna</a></li>
+                    <li><a href="index.html" data-lang="ru">Главная</a></li>
+                    <li><a href="gallery.html" data-lang="en">Gallery</a></li>
+                    <li><a href="gallery.html" data-lang="sr">Galerija</a></li>
+                    <li><a href="gallery.html" data-lang="ru">Галерея</a></li>
+                    <li><a href="option1.html" class="active" data-lang="en">Audio</a></li>
+                    <li><a href="option1.html" class="active" data-lang="sr">Audio</a></li>
+                    <li><a href="option1.html" class="active" data-lang="ru">Аудио</a></li>
+                    <li><a href="option2.html" data-lang="en">Lighting</a></li>
+                    <li><a href="option2.html" data-lang="sr">Rasveta</a></li>
+                    <li><a href="option2.html" data-lang="ru">Свет</a></li>
+                    <li><a href="option3.html" data-lang="en">Effects</a></li>
+                    <li><a href="option3.html" data-lang="sr">Efekti</a></li>
+                    <li><a href="option3.html" data-lang="ru">Эффекты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Audio Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <h2 data-lang="en">Professional Audio Equipment</h2>
+            <h2 data-lang="sr">Profesionalna audio oprema</h2>
+            <h2 data-lang="ru">Профессиональное аудио оборудование</h2>
+        </div>
+    </section>
+
+    <!-- Audio Equipment -->
+    <section class="equipment-list">
+        <div class="container">
+            <!-- Speakers -->
+            <div class="category">
+                <h3>SPEAKERS</h3>
+                <div class="models">
+                    <div class="model">D&B B22 Sub</div>
+                    <div class="model">D&B XSL Top</div>
+                    <div class="model">JBL VERTEC Series</div>
+                    <div class="model">JBL SRX 918</div>
+                    <div class="model">JBL SRX 906</div>
+                    <div class="model">JBL VRX 918</div>
+                    <div class="model">JBL VRX 932</div>
+                    <div class="model">JBL PRX 518</div>
+                    <div class="model">JBL PRX 635</div>
+                    <div class="model">JBL PRX 515</div>
+                    <div class="model">RCF 8003 & 8004</div>
+                    <div class="model">RCF TT+ Series</div>
+                    <div class="model">RCF 945</div>
+                    <div class="model">RCF 915</div>
+                    <div class="model">RCF 912</div>
+                    <div class="model">RCF 715</div>
+                    <div class="model">RCF NX Monitor</div>
+                    <div class="model">KV2 ES System</div>
+                    <div class="model">TURBO SOUND INSPIRE 2000</div>
+                </div>
+            </div>
+
+            <!-- Mixing Consoles -->
+            <div class="category">
+                <h3>MIXING CONSOLES</h3>
+                <div class="models">
+                    <div class="model">DIGICO Quantum 225</div>
+                    <div class="model">YAMAHA CL5</div>
+                    <div class="model">MIDAS M32 / M32R</div>
+                    <div class="model">BEHRINGER WING</div>
+                    <div class="model">BEHRINGER X32</div>
+                    <div class="model">ALLEN & HEATH 16:2</div>
+                    <div class="model">DYNACORD CMX 1600 / 1000</div>
+                    <div class="model">MACKIE CFX 16</div>
+                    <div class="model">MACKIE CFR 12</div>
+                </div>
+            </div>
+
+            <!-- Microphones -->
+            <div class="category">
+                <h3>MICROPHONES</h3>
+                <div class="models">
+                    <div class="model">DPA</div>
+                    <div class="model">SHURE QLXD, SLXD, BLX</div>
+                    <div class="model">SHURE BETA 57/58</div>
+                    <div class="model">Sennheiser Series 900/600</div>
+                    <div class="model">AKG</div>
+                    <div class="model">Audio-Technica</div>
+                </div>
+            </div>
+            
+            <!-- Audio Monitoring -->
+            <div class="category">
+                <h3>AUDIO MONITORING</h3>
+                <div class="models">
+                    <div class="model">Sennheiser G4</div>
+                    <div class="model">Sennheiser G3</div>
+                </div>
+            </div>
+            
+            <!-- Backline -->
+            <div class="category">
+                <h3>BACKLINE</h3>
+                <div class="models">
+                    <div class="model">YAMAHA RECORDING CUSTOM</div>
+                    <div class="model">YAMAHA MAPLE CUSTOM</div>
+                    <div class="model">YAMAHA OAK CUSTOM</div>
+                    <div class="model">YAMAHA STAGE CUSTOM</div>
+                    <div class="model">DW COLLECTORS Exotic Maple</div>
+                    <div class="model">MARK BASS II / III</div>
+                    <div class="model">AMPEG SVT</div>
+                    <div class="model">TRACE ELLIOT</div>
+                    <div class="model">GALLIEN-KRUEGER 1001 RB-II 700W</div>
+                    <div class="model">FENDER TWIN REVERB 2×12'</div>
+                    <div class="model">FENDER HOT ROD DELUXE III</div>
+                    <div class="model">MARSHALL JCM 800</div>
+                    <div class="model">NORD STAGE 3/4 88</div>
+                    <div class="model">ROLAND 300 RD / 800 RD / 2000 RD</div>
+                    <div class="model">YAMAHA MONTAGE</div>
+                    <div class="model">LP GALAXY Conga Set</div>
+                    <div class="model">LP GALAXY Bongo Set</div>
+                    <div class="model">LP Timbales Karl Perazzo</div>
+                    <div class="model">FENDER Telecaster Custom Shop '68</div>
+                    <div class="model">FENDER Stratocaster Master Built</div>
+                    <div class="model">FENDER Precision Bass</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>VINYL-<span>M</span></h2>
+                    <p data-lang="en">Sound Equipment Rental</p>
+                    <p data-lang="sr">Izdavanje audio opreme</p>
+                    <p data-lang="ru">Аренда аудио оборудования</p>
+                </div>
+                <div class="footer-links">
+                    <h4 data-lang="en">Quick Links</h4>
+                    <h4 data-lang="sr">Brzi linkovi</h4>
+                    <h4 data-lang="ru">Быстрые ссылки</h4>
+                    <ul>
+                        <li><a href="index.html" data-lang="en">Home</a></li>
+                        <li><a href="index.html" data-lang="sr">Početna</a></li>
+                        <li><a href="index.html" data-lang="ru">Главная</a></li>
+                        <li><a href="gallery.html" data-lang="en">Gallery</a></li>
+                        <li><a href="gallery.html" data-lang="sr">Galerija</a></li>
+                        <li><a href="gallery.html" data-lang="ru">Галерея</a></li>
+                        <li><a href="#contact" data-lang="en">Contact</a></li>
+                        <li><a href="#contact" data-lang="sr">Kontakt</a></li>
+                        <li><a href="#contact" data-lang="ru">Контакты</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Vinyl-M. <span data-lang="en">All rights reserved.</span><span data-lang="sr">Sva prava zadržana.</span><span data-lang="ru">Все права защищены.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Обработчик кнопок переключения языка
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const lang = this.dataset.lang;
+                
+                // Обновляем URL без перезагрузки
+                const url = new URL(window.location);
+                url.searchParams.set('lang', lang);
+                window.history.pushState({}, '', url);
+                
+                // Применяем изменения
+                handleLanguage();
+            });
+        });
+
+        // Обработчик кнопок навигации
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Добавляем параметр языка ко всем ссылкам
+                const lang = localStorage.getItem('vinylLang') || 'en';
+                const url = new URL(this.href);
+                url.searchParams.set('lang', lang);
+                this.href = url.toString();
+            });
+        });
+    </script>
+</body>
+</html>

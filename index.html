@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+    // Функция для работы с языком
+    function handleLanguage() {
+        // Проверяем параметр URL (?lang=)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlLang = urlParams.get('lang');
+        
+        // Проверяем сохраненный язык
+        const savedLang = localStorage.getItem('vinylLang');
+        
+        // Определяем язык браузера
+        const browserLang = navigator.language.slice(0, 2);
+        
+        // Устанавливаем приоритет: URL > Saved > Browser > Default (en)
+        const lang = ['en', 'sr', 'ru'].includes(urlLang) ? urlLang :
+                     savedLang || (['en', 'sr', 'ru'].includes(browserLang) ? browserLang : 'en');
+        
+        // Сохраняем выбранный язык
+        localStorage.setItem('vinylLang', lang);
+        document.documentElement.lang = lang;
+        
+        // Обновляем кнопки
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+        
+        // Обновляем контент
+        document.querySelectorAll('[data-lang]').forEach(el => {
+            el.style.display = el.dataset.lang === lang ? 
+                (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ? 'block' : 
+                 el.classList.contains('btn') ? 'inline-block' : 'block') : 'none';
+        });
+        
+        // Обновляем все ссылки на сайте
+        document.querySelectorAll('a:not([href^="#"])').forEach(a => {
+            const url = new URL(a.href);
+            url.searchParams.set('lang', lang);
+            a.href = url.toString();
+        });
+    }
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', handleLanguage);
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinyl-M | Professional Sound & Light Rental</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Основные изменения */
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .about-text h4 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .about-image img {
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .features {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .feature-item i {
+            color: #4a6baf;
+            margin-right: 10px;
+        }
+        
+        /* Стили для нового баннера */
+        .banner {
+            background: url('images/banner.png') center/cover no-repeat;
+            padding: 150px 0;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 0;
+        }
+        
+        .banner-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .banner h2 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-weight: 700;
+        }
+        
+        .banner .btn {
+            display: block;
+            margin: 0 auto;
+            max-width: 200px;
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            background-color: #4a6baf;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .banner .btn:hover {
+            background-color: #3a5a9f;
+            transform: translateY(-3px);
+        }
+        
+        /* Галерея */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        /* Контакты */
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+        
+        .contact-info {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        
+        .info-item {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-item i {
+            font-size: 1.2rem;
+            color: #4a6baf;
+            margin-right: 15px;
+            width: 25px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher">
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="sr">SR</button>
+        <button class="lang-btn" data-lang="ru">RU</button>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="logo">
+                <div class="logo-img">
+                    <img src="images/logo.png" alt="Vinyl-M Logo">
+                </div>
+                <h1>VINYL-<span>M</span></h1>
+                <p class="tagline" data-lang="en">Professional Sound & Light Rental</p>
+                <p class="tagline" data-lang="sr">Profesionalni najam zvuka i svetla</p>
+                <p class="tagline" data-lang="ru">Профессиональная аренда звука и света</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active" data-lang="en">Home</a></li>
+                    <li><a href="index.html" class="active" data-lang="sr">Početna</a></li>
+                    <li><a href="index.html" class="active" data-lang="ru">Главная</a></li>
+                    <li><a href="gallery.html" data-lang="en">Gallery</a></li>
+                    <li><a href="gallery.html" data-lang="sr">Galerija</a></li>
+                    <li><a href="gallery.html" data-lang="ru">Галерея</a></li>
+                    <li><a href="option1.html" data-lang="en">Audio</a></li>
+                    <li><a href="option1.html" data-lang="sr">Audio</a></li>
+                    <li><a href="option1.html" data-lang="ru">Аудио</a></li>
+                    <li><a href="option2.html" data-lang="en">Lighting</a></li>
+                    <li><a href="option2.html" data-lang="sr">Rasveta</a></li>
+                    <li><a href="option2.html" data-lang="ru">Свет</a></li>
+                    <li><a href="option3.html" data-lang="en">Effects</a></li>
+                    <li><a href="option3.html" data-lang="sr">Efekti</a></li>
+                    <li><a href="option3.html" data-lang="ru">Эффекты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="banner">
+        <div class="container">
+            <div class="banner-content">
+                <h2 data-lang="en">Premium Event Equipment Rental</h2>
+                <h2 data-lang="sr">Najam premium opreme za događaje</h2>
+                <h2 data-lang="ru">Аренда премиального оборудования для мероприятий</h2>
+                <a href="#contact" class="btn pulse" data-lang="en">Get a Quote</a>
+                <a href="#contact" class="btn pulse" data-lang="sr">Zatražite ponudu</a>
+                <a href="#contact" class="btn pulse" data-lang="ru">Получить предложение</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="container">
+            <h3 data-lang="en">OUR STORY</h3>
+            <h3 data-lang="sr">NAŠA PRIČA</h3>
+            <h3 data-lang="ru">НАША ИСТОРИЯ</h3>
+            <div class="about-content">
+                <div class="about-text">
+                    <h4 data-lang="en">Sound & Light Experts Since 2010</h4>
+                    <h4 data-lang="sr">Stručnjaci za zvuk i svetlo od 2010.</h4>
+                    <h4 data-lang="ru">Эксперты по звуку и свету с 2010 года</h4>
+                    
+                    <p data-lang="en">Vinyl-M has been providing top-tier audio and lighting solutions for events across Montenegro and the Balkans.</p>
+                    <p data-lang="sr">Vinyl-M pruža vrhunske audio i svetlosne rešenja za događaje širom Crne Gore i Balkana.</p>
+                    <p data-lang="ru">Vinyl-M предоставляет первоклассные аудио и световые решения для мероприятий по всей Черногории и Балканам.</p>
+                    
+                    <div class="features">
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-lang="en">150+ successful events annually</span>
+                            <span data-lang="sr">150+ uspešnih događaja godišnje</span>
+                            <span data-lang="ru">150+ успешных мероприятий ежегодно</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-lang="en">Cutting-edge equipment inventory</span>
+                            <span data-lang="sr">Najsavremenija oprema</span>
+                            <span data-lang="ru">Современное оборудование</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-lang="en">Certified technical specialists</span>
+                            <span data-lang="sr">Certifikovani tehničari</span>
+                            <span data-lang="ru">Сертифицированные технические специалисты</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-lang="en">State-of-the-Art Equipment - Rental of professional audio systems, lighting fixtures, and stage equipment from top brands</span>
+                            <span data-lang="sr">Najsavremenija oprema - Najam profesionalnih audio sistema, rasvete i pozorničke opreme vrhunskih brendova</span>
+                            <span data-lang="ru">Современное оборудование - Аренда профессиональных аудиосистем, осветительного и сценического оборудования от ведущих брендов</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-lang="en">Expert Team - Experienced sound engineers and technical specialists ensure flawless sound and visual support</span>
+                            <span data-lang="sr">Stručni tim - Ispitivani zvučni inženjeri i tehničari obezbeđuju besprekornu zvučnu i vizuelnu podršku</span>
+                            <span data-lang="ru">Команда экспертов - Опытные звукорежиссеры и технические специалисты обеспечивают безупречное звуковое и визуальное сопровождение</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-lang="en">Personalized Approach - We tailor solutions to fit your budget and event concept</span>
+                            <span data-lang="sr">Personalizovani pristup - Prilagođavamo rešenja vašem budžetu i konceptu događaja</span>
+                            <span data-lang="ru">Индивидуальный подход - Мы подбираем решения, соответствующие вашему бюджету и концепции мероприятия</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-lang="en">Full-Service Support - Delivery, installation, setup, and technical assistance throughout your event</span>
+                            <span data-lang="sr">Kompletna podrška - Dostava, instalacija, postavljanje i tehnička pomoć tokom celog događaja</span>
+                            <span data-lang="ru">Полный сервис - Доставка, установка, настройка и техническая поддержка на протяжении всего мероприятия</span>
+                        </div>
+                        <div class="feature-item highlight">
+                            <i class="fas fa-music"></i>
+                            <span data-lang="en">With Vinyl-M, your sound will be powerful, and your lighting unforgettable! 🎶</span>
+                            <span data-lang="sr">Sa Vinyl-M, vaš zvuk će biti moćan, a osvetljenje nezaboravno! 🎶</span>
+                            <span data-lang="ru">С Vinyl-M ваш звук будет мощным, а освещение незабываемым! 🎶</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img id="random-about-image" src="" alt="About Vinyl-M">
+                    <script>
+                        const aboutImages = [
+                            'images/about.png',
+                            'images/about2.png',
+                            'images/about3.png'
+                        ];
+                        document.getElementById('random-about-image').src = 
+                            aboutImages[Math.floor(Math.random() * aboutImages.length)];
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery-preview">
+        <div class="container">
+            <h3 data-lang="en">OUR WORK</h3>
+            <h3 data-lang="sr">NAŠ RAD</h3>
+            <h3 data-lang="ru">НАШИ РАБОТЫ</h3>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img id="random-gallery-image-1" src="" alt="Event Setup">
+                    <div class="overlay">
+                        <a href="gallery.html" class="btn" data-lang="en">View Gallery</a>
+                        <a href="gallery.html" class="btn" data-lang="sr">Pogledajte galeriju</a>
+                        <a href="gallery.html" class="btn" data-lang="ru">Смотреть галерею</a>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img id="random-gallery-image-2" src="" alt="Concert Lighting">
+                    <div class="overlay">
+                        <a href="gallery.html" class="btn" data-lang="en">View Gallery</a>
+                        <a href="gallery.html" class="btn" data-lang="sr">Pogledajte galeriju</a>
+                        <a href="gallery.html" class="btn" data-lang="ru">Смотреть галерею</a>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img id="random-gallery-image-3" src="" alt="DJ Setup">
+                    <div class="overlay">
+                        <a href="gallery.html" class="btn" data-lang="en">View Gallery</a>
+                        <a href="gallery.html" class="btn" data-lang="sr">Pogledajte galeriju</a>
+                        <a href="gallery.html" class="btn" data-lang="ru">Смотреть галерею</a>
+                    </div>
+                </div>
+            </div>
+            <script>
+                const galleryImages = [
+                    'images/gallery1.jpg',
+                    'images/gallery2.jpg',
+                    'images/gallery3.jpg',
+                    'images/gallery4.jpg',
+                    'images/gallery5.jpg',
+                    'images/gallery6.jpg'
+                ];
+                
+                function shuffleArray(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                    return array;
+                }
+                
+                const shuffledImages = shuffleArray([...galleryImages]).slice(0, 3);
+                
+                document.getElementById('random-gallery-image-1').src = shuffledImages[0];
+                document.getElementById('random-gallery-image-2').src = shuffledImages[1];
+                document.getElementById('random-gallery-image-3').src = shuffledImages[2];
+            </script>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+    <div class="container">
+        <h3 data-lang="en">GET IN TOUCH</h3>
+        <h3 data-lang="sr">KONTAKTIRAJTE NAS</h3>
+        <h3 data-lang="ru">СВЯЖИТЕСЬ С НАМИ</h3>
+        <div class="contact-content">
+            <div class="contact-info">
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p>Budva, Montenegro</p>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <p>+382 67 439 100</p>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <p>Vinylmbudva@gmail.com</p>
+                </div>
+                <div class="info-item">
+                    <i class="fab fa-facebook-f"></i>
+                    <p><a href="https://www.facebook.com/share/198Ar6UoX1/" target="_blank" style="text-decoration: none;">Vinyl M</a></p>
+                </div>
+            </div>
+            <div class="contact-form">
+                <form>
+                    <div class="form-group">
+                        <input type="text" placeholder="Name" data-lang="en" required>
+                        <input type="text" placeholder="Ime" data-lang="sr" required>
+                        <input type="text" placeholder="Имя" data-lang="ru" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Tell us about your event" data-lang="en" required></textarea>
+                        <textarea placeholder="Recite nam o svom događaju" data-lang="sr" required></textarea>
+                        <textarea placeholder="Расскажите о вашем мероприятии" data-lang="ru" required></textarea>
+                    </div>
+                    <button type="submit" class="btn" data-lang="en">Send Request</button>
+                    <button type="submit" class="btn" data-lang="sr">Pošaljite zahtjev</button>
+                    <button type="submit" class="btn" data-lang="ru">Отправить запрос</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="logo-img">
+                    <img src="images/logo.png" alt="Vinyl-M Logo">
+                </div>
+                <h2>VINYL-<span>M</span></h2>
+                <p data-lang="en">Professional Event Solutions</p>
+                <p data-lang="sr">Profesionalna rešenja za događaje</p>
+                <p data-lang="ru">Профессиональные решения для мероприятий</p>
+            </div>
+            <div class="footer-links">
+                <h4 data-lang="en">Quick Links</h4>
+                <h4 data-lang="sr">Brzi linkovi</h4>
+                <h4 data-lang="ru">Быстрые ссылки</h4>
+                <ul>
+                    <li><a href="index.html" data-lang="en">Home</a></li>
+                    <li><a href="index.html" data-lang="sr">Početna</a></li>
+                    <li><a href="index.html" data-lang="ru">Главная</a></li>
+                    <li><a href="gallery.html" data-lang="en">Gallery</a></li>
+                    <li><a href="gallery.html" data-lang="sr">Galerija</a></li>
+                    <li><a href="gallery.html" data-lang="ru">Галерея</a></li>
+                    <li><a href="#contact" data-lang="en">Contact</a></li>
+                    <li><a href="#contact" data-lang="sr">Kontakt</a></li>
+                    <li><a href="#contact" data-lang="ru">Контакты</a></li>
+                </ul>
+            </div>
+            <div class="footer-hours">
+                <h4 data-lang="en">Working Hours</h4>
+                <h4 data-lang="sr">Radno vreme</h4>
+                <h4 data-lang="ru">Часы работы</h4>
+                <p>Mon-Fri: 00:00 - 24:00</p>
+                <p data-lang="en">No Weekends</p>
+                <p data-lang="sr">Bez Vikendom</p>
+                <p data-lang="ru">Без Выходных</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Vinyl-M. <span data-lang="en">All rights reserved.</span><span data-lang="sr">Sva prava zadržana.</span><span data-lang="ru">Все права защищены.</span></p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .contact-info p,
+    .contact-info a {
+        color: #000;
+        font-weight: bold; /* Сделать жирным */
+    }
+
+    .info-item i {
+        color: #000;
+    }
+
+    .contact-info a:hover,
+    .social-links a:hover {
+        text-decoration: underline;
+    }
+
+    .social-links a {
+        color: #000;
+    }
+</style>
+
+<script src="js/script.js"></script>
+<script>
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const lang = this.dataset.lang;
+            const url = new URL(window.location);
+            url.searchParams.set('lang', lang);
+            window.history.pushState({}, '', url);
+            handleLanguage();
+        });
+    });
+
+    document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', function (e) {
+            const lang = localStorage.getItem('vinylLang') || 'en';
+            const url = new URL(this.href);
+            url.searchParams.set('lang', lang);
+            this.href = url.toString();
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+// Исправленная функция для работы с языком
+function handleLanguage() {
+    // Проверяем параметр URL (?lang=)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    
+    // Проверяем сохраненный язык
+    const savedLang = localStorage.getItem('vinylLang');
+    
+    // Определяем язык браузера
+    const browserLang = navigator.language.slice(0, 2);
+    
+    // Устанавливаем приоритет: URL > Saved > Browser > Default (en)
+    const lang = ['en', 'sr', 'ru'].includes(urlLang) ? urlLang :
+                 savedLang || (['en', 'sr', 'ru'].includes(browserLang) ? browserLang : 'en');
+    
+    // Сохраняем выбранный язык
+    localStorage.setItem('vinylLang', lang);
+    document.documentElement.lang = lang;
+    
+    // Обновляем кнопки
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    
+    // Обновляем контент
+    document.querySelectorAll('[data-lang]').forEach(el => {
+        el.style.display = el.dataset.lang === lang ? 
+            (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ? 'block' : 
+             el.classList.contains('btn') ? 'inline-block' : 'block') : 'none';
+    });
+    
+    // Обновляем все ссылки на сайте
+    document.querySelectorAll('a:not([href^="#"])').forEach(a => {
+        const url = new URL(a.href);
+        url.searchParams.set('lang', lang);
+        a.href = url.toString();
+    });
+}
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', handleLanguage);
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinyl-M | Special Effects</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Стили для баннера */
+        .page-hero {
+            background: url('images/banner4.png') center/cover no-repeat;
+            padding: 120px 0;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            margin-bottom: 40px;
+        }
+        
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 0;
+        }
+        
+        .page-hero h2 {
+            position: relative;
+            z-index: 1;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* Стили для категорий оборудования */
+        .category {
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+        }
+        
+        /* Фоны для разных категорий спецэффектов */
+        .category:nth-child(1) { /* SPECIAL EFFECTS */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/effects-special-bg.jpg') center/cover no-repeat;
+        }
+        
+        .category:nth-child(2) { /* LED SCREENS */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/effects-led-bg.jpg') center/cover no-repeat;
+        }
+        
+        .category:nth-child(3) { /* PROJECTION */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/effects-projection-bg.jpg') center/cover no-repeat;
+        }
+        
+        .category h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .models {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .model {
+            background: rgba(255,255,255,0.1);
+            padding: 12px 15px;
+            border-radius: 5px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .model:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="sr">SR</button>
+        <button class="lang-btn" data-lang="ru">RU</button>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>VINYL-<span>M</span></h1>
+                <p class="tagline" data-lang="en">Special Effects Equipment</p>
+                <p class="tagline" data-lang="sr">Oprema za specijalne efekte</p>
+                <p class="tagline" data-lang="ru">Оборудование для спецэффектов</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" data-lang="en">Home</a></li>
+                    <li><a href="index.html" data-lang="sr">Početna</a></li>
+                    <li><a href="index.html" data-lang="ru">Главная</a></li>
+                    <li><a href="gallery.html" data-lang="en">Gallery</a></li>
+                    <li><a href="gallery.html" data-lang="sr">Galerija</a></li>
+                    <li><a href="gallery.html" data-lang="ru">Галерея</a></li>
+                    <li><a href="option1.html" data-lang="en">Audio</a></li>
+                    <li><a href="option1.html" data-lang="sr">Audio</a></li>
+                    <li><a href="option1.html" data-lang="ru">Аудио</a></li>
+                    <li><a href="option2.html" data-lang="en">Lighting</a></li>
+                    <li><a href="option2.html" data-lang="sr">Rasveta</a></li>
+                    <li><a href="option2.html" data-lang="ru">Свет</a></li>
+                    <li><a href="option3.html" class="active" data-lang="en">Effects</a></li>
+                    <li><a href="option3.html" class="active" data-lang="sr">Efekti</a></li>
+                    <li><a href="option3.html" class="active" data-lang="ru">Эффекты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Effects Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <h2 data-lang="en">Special Effects Equipment</h2>
+            <h2 data-lang="sr">Oprema za specijalne efekte</h2>
+            <h2 data-lang="ru">Оборудование для спецэффектов</h2>
+        </div>
+    </section>
+
+    <!-- Effects Equipment -->
+    <section class="equipment-list">
+        <div class="container">
+            <!-- Effects -->
+            <div class="category">
+                <h3>SPECIAL EFFECTS</h3>
+                <div class="models">
+                    <div class="model">HAZER</div>
+                    <div class="model">SMOKE MACHINE</div>
+                    <div class="model">FIREWORKS</div>
+                    <div class="model">FOUNTAIN</div>
+                    <div class="model">ICE SMOKE EFFECT</div>
+                    <div class="model">CONFETTI CANNON</div>
+                    <div class="model">SNOW MACHINE</div>
+                    <div class="model">BUBBLE MACHINE</div>
+                </div>
+            </div>
+
+            <!-- LED Screens -->
+            <div class="category">
+                <h3>LED SCREENS</h3>
+                <div class="models">
+                    <div class="model">LED Screen 2.6</div>
+                    <div class="model">TV Screen</div>
+                    <div class="model">Video Wall</div>
+                    <div class="model">Transparent LED</div>
+                    <div class="model">Flexible LED</div>
+                </div>
+            </div>
+
+            <!-- Projection -->
+            <div class="category">
+                <h3>PROJECTION</h3>
+                <div class="models">
+                    <div class="model">High-Lumen Projector</div>
+                    <div class="model">Projection Screen</div>
+                    <div class="model">3D Mapping System</div>
+                    <div class="model">Short-Throw Projector</div>
+                    <div class="model">Laser Projector</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>VINYL-<span>M</span></h2>
+                    <p data-lang="en">Special Effects Rental</p>
+                    <p data-lang="sr">Izdavanje opreme za efekte</p>
+                    <p data-lang="ru">Аренда оборудования для эффектов</p>
+                </div>
+                <div class="footer-links">
+                    <h4 data-lang="en">Quick Links</h4>
+                    <h4 data-lang="sr">Brzi linkovi</h4>
+                    <h4 data-lang="ru">Быстрые ссылки</h4>
+                    <ul>
+                        <li><a href="index.html" data-lang="en">Home</a></li>
+                        <li><a href="index.html" data-lang="sr">Početna</a></li>
+                        <li><a href="index.html" data-lang="ru">Главная</a></li>
+                        <li><a href="gallery.html" data-lang="en">Gallery</a></li>
+                        <li><a href="gallery.html" data-lang="sr">Galerija</a></li>
+                        <li><a href="gallery.html" data-lang="ru">Галерея</a></li>
+                        <li><a href="#contact" data-lang="en">Contact</a></li>
+                        <li><a href="#contact" data-lang="sr">Kontakt</a></li>
+                        <li><a href="#contact" data-lang="ru">Контакты</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Vinyl-M. <span data-lang="en">All rights reserved.</span><span data-lang="sr">Sva prava zadržana.</span><span data-lang="ru">Все права защищены.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Обработчик кнопок переключения языка
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const lang = this.dataset.lang;
+                
+                // Обновляем URL без перезагрузки
+                const url = new URL(window.location);
+                url.searchParams.set('lang', lang);
+                window.history.pushState({}, '', url);
+                
+                // Применяем изменения
+                handleLanguage();
+            });
+        });
+
+        // Обработчик кнопок навигации
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Добавляем параметр языка ко всем ссылкам
+                const lang = localStorage.getItem('vinylLang') || 'en';
+                const url = new URL(this.href);
+                url.searchParams.set('lang', lang);
+                this.href = url.toString();
+            });
+        });
+    </script>
+</body>
+</html>

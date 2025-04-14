@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinyl-M | Gallery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --red: #e63946;
+            --dark-gray: #222222;
+            --light-gray: #f0f0f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-gray);
+            color: var(--white);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 20px;
+            background-color: var(--black);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            padding: 5px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            color: var(--red);
+            border-bottom: 2px solid var(--red);
+        }
+
+        /* Header */
+        header {
+            background-color: var(--black);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 40px;
+            z-index: 99;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .logo h1 span {
+            color: var(--red);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: var(--white);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--red);
+        }
+
+        nav ul li a.active {
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        /* Gallery Hero */
+        .gallery-hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/banner1.png');
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .gallery-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--red), transparent);
+            opacity: 0.3;
+        }
+
+        .gallery-hero h1 {
+            color: var(--white);
+            font-size: 4rem;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            position: relative;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            aspect-ratio: 4/3;
+            transform-style: preserve-3d;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(230, 57, 70, 0.3);
+            z-index: 2;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            color: white;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 3;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            overflow: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-img {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+            border: 3px solid var(--red);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--red);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 3rem;
+            cursor: pointer;
+            padding: 0 20px;
+            transition: color 0.3s ease;
+            z-index: 10;
+        }
+
+        .nav-btn:hover {
+            color: var(--red);
+        }
+
+        .prev-btn {
+            left: 10px;
+        }
+
+        .next-btn {
+            right: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--black);
+            color: var(--white);
+            padding: 40px 0 20px;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .footer-logo h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .footer-logo h2 span {
+            color: var(--red);
+        }
+
+        .footer-contact p {
+            margin-bottom: 10px;
+        }
+
+        .footer-contact i {
+            color: var(--red);
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            
+            .gallery-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav ul li {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="sr">SR</button>
+        <button class="lang-btn" data-lang="ru">RU</button>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <div class="logo-img">
+                    <img src="images/logo.png" alt="Vinyl-M Logo" style="width:100%;height:auto;">
+                </div>
+                <h1>VINYL-<span>M</span></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" data-lang="en">Home</a><a href="index.html" data-lang="sr">Početna</a><a href="index.html" data-lang="ru">Главная</a></li>
+                    <li><a href="gallery.html" class="active" data-lang="en">Gallery</a><a href="gallery.html" class="active" data-lang="sr">Galerija</a><a href="gallery.html" class="active" data-lang="ru">Галерея</a></li>
+                    <li><a href="option1.html" data-lang="en">Audio</a><a href="option1.html" data-lang="sr">Audio</a><a href="option1.html" data-lang="ru">Аудио</a></li>
+                    <li><a href="option2.html" data-lang="en">Lighting</a><a href="option2.html" data-lang="sr">Rasveta</a><a href="option2.html" data-lang="ru">Свет</a></li>
+                    <li><a href="option3.html" data-lang="en">Effects</a><a href="option3.html" data-lang="sr">Efekti</a><a href="option3.html" data-lang="ru">Эффекты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Gallery Hero -->
+    <section class="gallery-hero">
+        <div class="container">
+            <h1 data-lang="en">Our Gallery</h1>
+            <h1 data-lang="sr">Naša Galerija</h1>
+            <h1 data-lang="ru">Наша Галерея</h1>
+        </div>
+    </section>
+
+    <!-- Gallery Grid -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="gallery-grid">
+                <!-- 24 Gallery Items -->
+                <div class="gallery-item" onclick="openModal(0)">
+                    <img src="images/gallery1.jpg" alt="Concert Setup 1">
+                    <div class="gallery-caption">Concert Setup 1</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(1)">
+                    <img src="images/gallery2.jpg" alt="Concert Setup 2">
+                    <div class="gallery-caption">Concert Setup 2</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(2)">
+                    <img src="images/gallery3.jpg" alt="Concert Setup 3">
+                    <div class="gallery-caption">Concert Setup 3</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(3)">
+                    <img src="images/gallery4.jpg" alt="Concert Setup 4">
+                    <div class="gallery-caption">Concert Setup 4</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(4)">
+                    <img src="images/gallery5.jpg" alt="Concert Setup 5">
+                    <div class="gallery-caption">Concert Setup 5</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(5)">
+                    <img src="images/gallery6.jpg" alt="Concert Setup 6">
+                    <div class="gallery-caption">Concert Setup 6</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(6)">
+                    <img src="images/gallery7.jpg" alt="Concert Setup 7">
+                    <div class="gallery-caption">Concert Setup 7</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(7)">
+                    <img src="images/gallery8.jpg" alt="Concert Setup 8">
+                    <div class="gallery-caption">Concert Setup 8</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(8)">
+                    <img src="images/gallery9.jpg" alt="Concert Setup 9">
+                    <div class="gallery-caption">Concert Setup 9</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(9)">
+                    <img src="images/gallery10.jpg" alt="Concert Setup 10">
+                    <div class="gallery-caption">Concert Setup 10</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(10)">
+                    <img src="images/gallery11.jpg" alt="Concert Setup 11">
+                    <div class="gallery-caption">Concert Setup 11</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(11)">
+                    <img src="images/gallery12.jpg" alt="Concert Setup 12">
+                    <div class="gallery-caption">Concert Setup 12</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(12)">
+                    <img src="images/gallery13.jpg" alt="Concert Setup 13">
+                    <div class="gallery-caption">Concert Setup 13</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(13)">
+                    <img src="images/gallery14.jpg" alt="Concert Setup 14">
+                    <div class="gallery-caption">Concert Setup 14</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(14)">
+                    <img src="images/gallery15.jpg" alt="Concert Setup 15">
+                    <div class="gallery-caption">Concert Setup 15</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(15)">
+                    <img src="images/gallery16.jpg" alt="Concert Setup 16">
+                    <div class="gallery-caption">Concert Setup 16</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(16)">
+                    <img src="images/gallery17.jpg" alt="Concert Setup 17">
+                    <div class="gallery-caption">Concert Setup 17</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(17)">
+                    <img src="images/gallery18.jpg" alt="Concert Setup 18">
+                    <div class="gallery-caption">Concert Setup 18</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(18)">
+                    <img src="images/gallery19.jpg" alt="Concert Setup 19">
+                    <div class="gallery-caption">Concert Setup 19</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(19)">
+                    <img src="images/gallery20.jpg" alt="Concert Setup 20">
+                    <div class="gallery-caption">Concert Setup 20</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(20)">
+                    <img src="images/gallery21.jpg" alt="Concert Setup 21">
+                    <div class="gallery-caption">Concert Setup 21</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(21)">
+                    <img src="images/gallery22.jpg" alt="Concert Setup 22">
+                    <div class="gallery-caption">Concert Setup 22</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(22)">
+                    <img src="images/gallery23.jpg" alt="Concert Setup 23">
+                    <div class="gallery-caption">Concert Setup 23</div>
+                </div>
+                <div class="gallery-item" onclick="openModal(23)">
+                    <img src="images/gallery24.jpg" alt="Concert Setup 24">
+                    <div class="gallery-caption">Concert Setup 24</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div id="imageModal" class="modal">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <span class="nav-btn prev-btn" onclick="navigate(-1)">&#10094;</span>
+        <span class="nav-btn next-btn" onclick="navigate(1)">&#10095;</span>
+        <div class="modal-content">
+            <img id="modalImage" class="modal-img" src="" alt="">
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>VINYL-<span>M</span></h2>
+                    <p data-lang="en">Professional Sound & Light Equipment</p>
+                    <p data-lang="sr">Profesionalna zvučna i svetlosna oprema</p>
+                    <p data-lang="ru">Профессиональное звуковое и световое оборудование</p>
+                </div>
+                <div class="footer-contact">
+                    <p><i class="fas fa-map-marker-alt"></i> Budva, Montenegro</p>
+                    <p><i class="fas fa-phone"></i> +382 69 123 456</p>
+                    <p><i class="fas fa-envelope"></i> info@vinyl-m.com</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Vinyl-M. <span data-lang="en">All rights reserved.</span><span data-lang="sr">Sva prava zadržana.</span><span data-lang="ru">Все права защищены.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Language System
+        function setLanguage(lang) {
+            localStorage.setItem('vinylLang', lang);
+            document.documentElement.lang = lang;
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                el.style.display = el.dataset.lang === lang ? 
+                    (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ? 'block' : 
+                     el.classList.contains('btn') ? 'inline-block' : 'block') : 'none';
+            });
+            
+            document.querySelectorAll('a:not([href^="#"])').forEach(a => {
+                const url = new URL(a.href);
+                url.searchParams.set('lang', lang);
+                a.href = url.toString();
+            });
+        }
+
+        function initLanguage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            const savedLang = localStorage.getItem('vinylLang');
+            const browserLang = navigator.language.slice(0, 2);
+            
+            const lang = ['en', 'sr', 'ru'].includes(urlLang) ? urlLang :
+                         savedLang || (['en', 'sr', 'ru'].includes(browserLang) ? browserLang : 'en');
+            
+            setLanguage(lang);
+        }
+
+        // Modal Gallery
+        let currentImageIndex = 0;
+        const galleryImages = Array.from(document.querySelectorAll('.gallery-item img'));
+
+        function openModal(index) {
+            currentImageIndex = index;
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            
+            modalImg.src = galleryImages[index].src;
+            modalImg.alt = galleryImages[index].alt;
+            
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        function navigate(direction) {
+            currentImageIndex += direction;
+            
+            if (currentImageIndex >= galleryImages.length) {
+                currentImageIndex = 0;
+            } else if (currentImageIndex < 0) {
+                currentImageIndex = galleryImages.length - 1;
+            }
+            
+            document.getElementById('modalImage').src = galleryImages[currentImageIndex].src;
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            initLanguage();
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const lang = this.dataset.lang;
+                    const url = new URL(window.location);
+                    url.searchParams.set('lang', lang);
+                    window.history.pushState({}, '', url);
+                    setLanguage(lang);
+                });
+            });
+            
+            // Close modal when clicking outside image
+            document.getElementById('imageModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                const modal = document.getElementById('imageModal');
+                if (modal.classList.contains('show')) {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                    } else if (e.key === 'ArrowRight') {
+                        navigate(1);
+                    } else if (e.key === 'ArrowLeft') {
+                        navigate(-1);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
