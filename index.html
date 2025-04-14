@@ -1,102 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-    // Функция для работы с языком
-    function handleLanguage() {
-        // Проверяем параметр URL (?lang=)
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlLang = urlParams.get('lang');
-        
-        // Проверяем сохраненный язык
-        const savedLang = localStorage.getItem('vinylLang');
-        
-        // Определяем язык браузера
-        const browserLang = navigator.language.slice(0, 2);
-        
-        // Устанавливаем приоритет: URL > Saved > Browser > Default (en)
-        const lang = ['en', 'sr', 'ru'].includes(urlLang) ? urlLang :
-                     savedLang || (['en', 'sr', 'ru'].includes(browserLang) ? browserLang : 'en');
-        
-        // Сохраняем выбранный язык
-        localStorage.setItem('vinylLang', lang);
-        document.documentElement.lang = lang;
-        
-        // Обновляем кнопки
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.lang === lang);
-        });
-        
-        // Обновляем контент
-        document.querySelectorAll('[data-lang]').forEach(el => {
-            el.style.display = el.dataset.lang === lang ? 
-                (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ? 'block' : 
-                 el.classList.contains('btn') ? 'inline-block' : 'block') : 'none';
-        });
-        
-        // Обновляем все ссылки на сайте
-        document.querySelectorAll('a:not([href^="#"])').forEach(a => {
-            const url = new URL(a.href);
-            url.searchParams.set('lang', lang);
-            a.href = url.toString();
-        });
-    }
-
-    // Инициализация при загрузке
-    document.addEventListener('DOMContentLoaded', handleLanguage);
-    </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vinyl-M | Professional Sound & Light Rental</title>
-    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Основные изменения */
-        .about-text {
-            font-size: 1.1rem;
+        /* Базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
             line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
         }
         
-        .about-text h4 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-        
-        .about-image img {
-            aspect-ratio: 3/4;
-            object-fit: cover;
+        .container {
             width: 100%;
-            height: auto;
-            border-radius: 8px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
         }
         
-        .features {
-            background-color: #f8f9fa;
-            padding: 25px;
-            border-radius: 8px;
-            margin-top: 20px;
+        /* Шапка */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
         
-        .feature-item {
-            margin-bottom: 15px;
-            padding: 15px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .logo {
+            display: flex;
+            align-items: center;
         }
         
-        .feature-item i {
+        .logo-img {
+            margin-right: 15px;
+        }
+        
+        .logo-img img {
+            height: 50px;
+        }
+        
+        .logo h1 {
+            font-size: 2.2rem;
+            color: #333;
+        }
+        
+        .logo span {
             color: #4a6baf;
-            margin-right: 10px;
         }
         
-        /* Стили для нового баннера */
+        .tagline {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        /* Навигация */
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 20px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: #4a6baf;
+        }
+        
+        /* Баннер */
         .banner {
             background: url('images/banner.png') center/cover no-repeat;
             padding: 150px 0;
             text-align: center;
             color: white;
             position: relative;
+            margin-top: 80px;
         }
         
         .banner::before {
@@ -124,23 +121,79 @@
             font-weight: 700;
         }
         
-        .banner .btn {
-            display: block;
-            margin: 0 auto;
-            max-width: 200px;
-            font-size: 1.2rem;
-            padding: 15px 30px;
-            background-color: #4a6baf;
-            border: none;
-            transition: all 0.3s ease;
+        /* О нас */
+        .about {
+            padding: 80px 0;
         }
         
-        .banner .btn:hover {
-            background-color: #3a5a9f;
-            transform: translateY(-3px);
+        h3 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .about-content {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+        
+        .about-text {
+            flex: 1;
+            padding-right: 40px;
+        }
+        
+        .about-text h4 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #4a6baf;
+        }
+        
+        .about-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .about-image {
+            flex: 1;
+        }
+        
+        .about-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Фичи */
+        .features {
+            margin-top: 40px;
+        }
+        
+        .feature-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-item i {
+            color: #4a6baf;
+            margin-right: 10px;
+            font-size: 1.2rem;
         }
         
         /* Галерея */
+        .gallery-preview {
+            padding: 80px 0;
+            background-color: #f8f9fa;
+        }
+        
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -162,11 +215,11 @@
             transition: transform 0.3s ease;
         }
         
-        .gallery-item:hover img {
-            transform: scale(1.05);
+        /* Контакты */
+        .contact {
+            padding: 80px 0;
         }
         
-        /* Контакты */
         .contact-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -193,44 +246,359 @@
             width: 25px;
             text-align: center;
         }
+        
+        .contact-form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #4a6baf;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: #3a5a9f;
+            transform: translateY(-2px);
+        }
+        
+        /* Футер */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            flex: 1;
+        }
+        
+        .footer-logo img {
+            height: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .footer-logo h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .footer-logo span {
+            color: #4a6baf;
+        }
+        
+        .footer-links {
+            flex: 1;
+        }
+        
+        .footer-links h4 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links ul li a:hover {
+            color: white;
+        }
+        
+        .footer-hours {
+            flex: 1;
+        }
+        
+        .footer-hours h4 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .footer-hours p {
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #ccc;
+        }
+        
+        /* Переключатель языка */
+        .language-switcher {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .lang-btn {
+            background-color: #4a6baf;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background-color: #3a5a9f;
+            font-weight: bold;
+        }
+        
+        /* Мобильное меню */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+            position: absolute;
+            top: 25px;
+            right: 20px;
+        }
+        
+        /* Адаптивные стили */
+        @media (max-width: 992px) {
+            .banner {
+                padding: 100px 0;
+            }
+            
+            .banner h2 {
+                font-size: 2.2rem;
+            }
+            
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .about-text {
+                padding-right: 0;
+                margin-bottom: 30px;
+            }
+            
+            .about-image {
+                margin-top: 30px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            /* Шапка */
+            header {
+                padding: 15px 0;
+            }
+            
+            .logo h1 {
+                font-size: 1.8rem;
+                white-space: nowrap;
+            }
+            
+            .tagline {
+                font-size: 0.9rem;
+            }
+            
+            /* Мобильное меню */
+            nav {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: white;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                z-index: 1000;
+                padding: 20px;
+            }
+            
+            nav.active {
+                display: block;
+            }
+            
+            nav ul {
+                flex-direction: column;
+            }
+            
+            nav ul li {
+                margin: 0 0 15px 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            /* Баннер */
+            .banner {
+                padding: 80px 0;
+                margin-top: 70px;
+            }
+            
+            .banner h2 {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+            
+            .banner .btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            
+            /* Галерея */
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-item img {
+                height: 250px;
+            }
+            
+            /* Контакты */
+            .contact-content {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Форма */
+            .contact-form {
+                padding: 20px;
+            }
+            
+            .form-group input,
+            .form-group textarea {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .form-group textarea {
+                min-height: 120px;
+            }
+            
+            .contact-form .btn {
+                width: 100%;
+                padding: 12px;
+            }
+            
+            /* Футер */
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-logo, 
+            .footer-links,
+            .footer-hours {
+                margin-bottom: 30px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .banner h2 {
+                font-size: 1.5rem;
+            }
+            
+            h3 {
+                font-size: 1.5rem;
+            }
+            
+            .about-text h4 {
+                font-size: 1.3rem;
+            }
+            
+            .about-text p {
+                font-size: 1rem;
+            }
+            
+            .feature-item {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .language-switcher {
+                top: 90px;
+                right: 10px;
+            }
+            
+            .lang-btn {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Переключатель языка -->
     <div class="language-switcher">
         <button class="lang-btn" data-lang="en">EN</button>
         <button class="lang-btn" data-lang="sr">SR</button>
         <button class="lang-btn" data-lang="ru">RU</button>
     </div>
 
+    <!-- Шапка -->
     <header>
         <div class="container">
             <div class="logo">
                 <div class="logo-img">
                     <img src="images/logo.png" alt="Vinyl-M Logo">
                 </div>
-                <h1>VINYL-<span>M</span></h1>
-                <p class="tagline" data-lang="en">Professional Sound & Light Rental</p>
-                <p class="tagline" data-lang="sr">Profesionalni najam zvuka i svetla</p>
-                <p class="tagline" data-lang="ru">Профессиональная аренда звука и света</p>
+                <div>
+                    <h1>VINYL-<span>M</span></h1>
+                    <p class="tagline" data-lang="en">Professional Sound & Light Rental</p>
+                    <p class="tagline" data-lang="sr">Profesionalni najam zvuka i svetla</p>
+                    <p class="tagline" data-lang="ru">Профессиональная аренда звука и света</p>
+                </div>
             </div>
-            <!-- Бургер-иконка -->
-<div class="burger" id="burger">
-  <span></span>
-  <span></span>
-  <span></span>
-</div>
-
-<!-- Навигация -->
-<nav class="mobile-nav" id="mobileNav">
-  <ul>
-    <li><a href="#home">Главная</a></li>
-    <li><a href="#about">О нас</a></li>
-    <li><a href="#services">Услуги</a></li>
-    <li><a href="#contact">Контакты</a></li>
-  </ul>
-</nav>
-
-            <nav>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav id="mainNav">
                 <ul>
                     <li><a href="index.html" class="active" data-lang="en">Home</a></li>
                     <li><a href="index.html" class="active" data-lang="sr">Početna</a></li>
@@ -252,6 +620,7 @@
         </div>
     </header>
 
+    <!-- Баннер -->
     <section class="banner">
         <div class="container">
             <div class="banner-content">
@@ -265,6 +634,7 @@
         </div>
     </section>
 
+    <!-- О нас -->
     <section class="about" id="about">
         <div class="container">
             <h3 data-lang="en">OUR STORY</h3>
@@ -333,20 +703,12 @@
                 </div>
                 <div class="about-image">
                     <img id="random-about-image" src="" alt="About Vinyl-M">
-                    <script>
-                        const aboutImages = [
-                            'images/about.png',
-                            'images/about2.png',
-                            'images/about3.png'
-                        ];
-                        document.getElementById('random-about-image').src = 
-                            aboutImages[Math.floor(Math.random() * aboutImages.length)];
-                    </script>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Галерея -->
     <section class="gallery-preview">
         <div class="container">
             <h3 data-lang="en">OUR WORK</h3>
@@ -378,353 +740,209 @@
                     </div>
                 </div>
             </div>
-            <script>
-                const galleryImages = [
-                    'images/gallery1.jpg',
-                    'images/gallery2.jpg',
-                    'images/gallery3.jpg',
-                    'images/gallery4.jpg',
-                    'images/gallery5.jpg',
-                    'images/gallery6.jpg'
-                ];
-                
-                function shuffleArray(array) {
-                    for (let i = array.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [array[i], array[j]] = [array[j], array[i]];
-                    }
-                    return array;
-                }
-                
-                const shuffledImages = shuffleArray([...galleryImages]).slice(0, 3);
-                
-                document.getElementById('random-gallery-image-1').src = shuffledImages[0];
-                document.getElementById('random-gallery-image-2').src = shuffledImages[1];
-                document.getElementById('random-gallery-image-3').src = shuffledImages[2];
-            </script>
         </div>
     </section>
 
+    <!-- Контакты -->
     <section class="contact" id="contact">
-    <div class="container">
-        <h3 data-lang="en">GET IN TOUCH</h3>
-        <h3 data-lang="sr">KONTAKTIRAJTE NAS</h3>
-        <h3 data-lang="ru">СВЯЖИТЕСЬ С НАМИ</h3>
-        <div class="contact-content">
-            <div class="contact-info">
-                <div class="info-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <p>Budva, Montenegro</p>
-                </div>
-                <div class="info-item">
-                    <i class="fas fa-phone"></i>
-                    <p>+382 67 439 100</p>
-                </div>
-                <div class="info-item">
-                    <i class="fas fa-envelope"></i>
-                    <p>Vinylmbudva@gmail.com</p>
-                </div>
-                <div class="info-item">
-                    <i class="fab fa-facebook-f"></i>
-                    <p><a href="https://www.facebook.com/share/198Ar6UoX1/" target="_blank" style="text-decoration: none;">Vinyl M</a></p>
-                </div>
-            </div>
-            <div class="contact-form">
-                <form>
-                    <div class="form-group">
-                        <input type="text" placeholder="Name" data-lang="en" required>
-                        <input type="text" placeholder="Ime" data-lang="sr" required>
-                        <input type="text" placeholder="Имя" data-lang="ru" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <textarea placeholder="Tell us about your event" data-lang="en" required></textarea>
-                        <textarea placeholder="Recite nam o svom događaju" data-lang="sr" required></textarea>
-                        <textarea placeholder="Расскажите о вашем мероприятии" data-lang="ru" required></textarea>
-                    </div>
-                    <button type="submit" class="btn" data-lang="en">Send Request</button>
-                    <button type="submit" class="btn" data-lang="sr">Pošaljite zahtjev</button>
-                    <button type="submit" class="btn" data-lang="ru">Отправить запрос</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
-
-<footer>
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <div class="logo-img">
-                    <img src="images/logo.png" alt="Vinyl-M Logo">
-                </div>
-                <h2>VINYL-<span>M</span></h2>
-                <p data-lang="en">Professional Event Solutions</p>
-                <p data-lang="sr">Profesionalna rešenja za događaje</p>
-                <p data-lang="ru">Профессиональные решения для мероприятий</p>
-            </div>
-            <div class="footer-links">
-                <h4 data-lang="en">Quick Links</h4>
-                <h4 data-lang="sr">Brzi linkovi</h4>
-                <h4 data-lang="ru">Быстрые ссылки</h4>
-                <ul>
-                    <li><a href="index.html" data-lang="en">Home</a></li>
-                    <li><a href="index.html" data-lang="sr">Početna</a></li>
-                    <li><a href="index.html" data-lang="ru">Главная</a></li>
-                    <li><a href="gallery.html" data-lang="en">Gallery</a></li>
-                    <li><a href="gallery.html" data-lang="sr">Galerija</a></li>
-                    <li><a href="gallery.html" data-lang="ru">Галерея</a></li>
-                    <li><a href="#contact" data-lang="en">Contact</a></li>
-                    <li><a href="#contact" data-lang="sr">Kontakt</a></li>
-                    <li><a href="#contact" data-lang="ru">Контакты</a></li>
-                </ul>
-            </div>
-            <div class="footer-hours">
-                <h4 data-lang="en">Working Hours</h4>
-                <h4 data-lang="sr">Radno vreme</h4>
-                <h4 data-lang="ru">Часы работы</h4>
-                <p>Mon-Fri: 00:00 - 24:00</p>
-                <p data-lang="en">No Weekends</p>
-                <p data-lang="sr">Bez Vikendom</p>
-                <p data-lang="ru">Без Выходных</p>
-            </div>
-        </div>
-        <div class="copyright">
-            <p>&copy; 2025 Vinyl-M. <span data-lang="en">All rights reserved.</span><span data-lang="sr">Sva prava zadržana.</span><span data-lang="ru">Все права защищены.</span></p>
-        </div>
-    </div>
-</footer>
-
-<style>
-    .contact-info p,
-    .contact-info a {
-        color: #000;
-        font-weight: bold; /* Сделать жирным */
-    }
-
-    .info-item i {
-        color: #000;
-    }
-
-    .contact-info a:hover,
-    .social-links a:hover {
-        text-decoration: underline;
-    }
-
-    .social-links a {
-        color: #000;
-    }
-</style>
-
-<script src="js/script.js"></script>
-<script>
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            const lang = this.dataset.lang;
-            const url = new URL(window.location);
-            url.searchParams.set('lang', lang);
-            window.history.pushState({}, '', url);
-            handleLanguage();
-        });
-    });
-
-    document.querySelectorAll('nav a').forEach(link => {
-        link.addEventListener('click', function (e) {
-            const lang = localStorage.getItem('vinylLang') || 'en';
-            const url = new URL(this.href);
-            url.searchParams.set('lang', lang);
-            this.href = url.toString();
-        });
-    });
-</script>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- ... (остальные meta-теги и скрипты остаются без изменений) ... -->
-    <style>
-        /* Базовые стили */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        body {
-            line-height: 1.6;
-            color: #333;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-        
-        /* Мобильное меню */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #333;
-        }
-        
-        /* Адаптивные стили */
-        @media (max-width: 992px) {
-            .banner {
-                padding: 100px 0;
-            }
-            
-            .banner h2 {
-                font-size: 2.2rem;
-            }
-            
-            .about-content {
-                flex-direction: column;
-            }
-            
-            .about-image {
-                margin-top: 30px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            /* Мобильное меню */
-            nav {
-                display: none;
-                position: fixed;
-                top: 80px;
-                left: 0;
-                width: 100%;
-                background: white;
-                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-                z-index: 1000;
-            }
-            
-            nav.active {
-                display: block;
-            }
-            
-            nav ul {
-                flex-direction: column;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            /* Баннер */
-            .banner {
-                padding: 80px 0;
-            }
-            
-            .banner h2 {
-                font-size: 1.8rem;
-                margin-bottom: 20px;
-            }
-            
-            .banner .btn {
-                padding: 10px 20px;
-                font-size: 1rem;
-            }
-            
-            /* Галерея */
-            .gallery-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .gallery-item img {
-                height: 250px;
-            }
-            
-            /* Контакты */
-            .contact-content {
-                grid-template-columns: 1fr;
-            }
-            
-            /* Футер */
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .footer-logo, 
-            .footer-links,
-            .footer-hours {
-                margin-bottom: 30px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .banner h2 {
-                font-size: 1.5rem;
-            }
-            
-            .language-switcher {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .feature-item span {
-                font-size: 0.9rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Добавляем кнопку мобильного меню -->
-    <header>
         <div class="container">
-            <div class="logo">
-                <div class="logo-img">
-                    <img src="images/logo.png" alt="Vinyl-M Logo">
+            <h3 data-lang="en">GET IN TOUCH</h3>
+            <h3 data-lang="sr">KONTAKTIRAJTE NAS</h3>
+            <h3 data-lang="ru">СВЯЖИТЕСЬ С НАМИ</h3>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>Budva, Montenegro</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <p>+382 67 439 100</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <p>Vinylmbudva@gmail.com</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fab fa-facebook-f"></i>
+                        <p><a href="https://www.facebook.com/share/198Ar6UoX1/" target="_blank">Vinyl M</a></p>
+                    </div>
                 </div>
-                <h1>VINYL-<span>M</span></h1>
-                <p class="tagline" data-lang="en">Professional Sound & Light Rental</p>
-                <!-- ... остальные элементы ... -->
+                <div class="contact-form">
+                    <form>
+                        <div class="form-group">
+                            <input type="text" placeholder="Name" data-lang="en" required>
+                            <input type="text" placeholder="Ime" data-lang="sr" required>
+                            <input type="text" placeholder="Имя" data-lang="ru" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Tell us about your event" data-lang="en" required></textarea>
+                            <textarea placeholder="Recite nam o svom događaju" data-lang="sr" required></textarea>
+                            <textarea placeholder="Расскажите о вашем мероприятии" data-lang="ru" required></textarea>
+                        </div>
+                        <button type="submit" class="btn" data-lang="en">Send Request</button>
+                        <button type="submit" class="btn" data-lang="sr">Pošaljite zahtjev</button>
+                        <button type="submit" class="btn" data-lang="ru">Отправить запрос</button>
+                    </form>
+                </div>
             </div>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                <i class="fas fa-bars"></i>
-            </button>
-            <nav id="mainNav">
-                <ul>
-                    <!-- ... навигационные ссылки ... -->
-                </ul>
-            </nav>
         </div>
-    </header>
+    </section>
 
-    <!-- Остальной HTML остается без изменений -->
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/logo.png" alt="Vinyl-M Logo">
+                    <h2>VINYL-<span>M</span></h2>
+                    <p data-lang="en">Professional Event Solutions</p>
+                    <p data-lang="sr">Profesionalna rešenja za događaje</p>
+                    <p data-lang="ru">Профессиональные решения для мероприятий</p>
+                </div>
+                <div class="footer-links">
+                    <h4 data-lang="en">Quick Links</h4>
+                    <h4 data-lang="sr">Brzi linkovi</h4>
+                    <h4 data-lang="ru">Быстрые ссылки</h4>
+                    <ul>
+                        <li><a href="index.html" data-lang="en">Home</a></li>
+                        <li><a href="index.html" data-lang="sr">Početna</a></li>
+                        <li><a href="index.html" data-lang="ru">Главная</a></li>
+                        <li><a href="gallery.html" data-lang="en">Gallery</a></li>
+                        <li><a href="gallery.html" data-lang="sr">Galerija</a></li>
+                        <li><a href="gallery.html" data-lang="ru">Галерея</a></li>
+                        <li><a href="#contact" data-lang="en">Contact</a></li>
+                        <li><a href="#contact" data-lang="sr">Kontakt</a></li>
+                        <li><a href="#contact" data-lang="ru">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-hours">
+                    <h4 data-lang="en">Working Hours</h4>
+                    <h4 data-lang="sr">Radno vreme</h4>
+                    <h4 data-lang="ru">Часы работы</h4>
+                    <p>Mon-Fri: 00:00 - 24:00</p>
+                    <p data-lang="en">No Weekends</p>
+                    <p data-lang="sr">Bez Vikendom</p>
+                    <p data-lang="ru">Без Выходных</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Vinyl-M. <span data-lang="en">All rights reserved.</span><span data-lang="sr">Sva prava zadržana.</span><span data-lang="ru">Все права защищены.</span></p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // Мобильное меню
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mainNav = document.getElementById('mainNav');
-        
-        mobileMenuBtn.addEventListener('click', function() {
-            mainNav.classList.toggle('active');
-        });
-        
-        // Закрытие меню при клике на ссылку
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', function() {
-                mainNav.classList.remove('active');
+        // Функция для работы с языком
+        function handleLanguage() {
+            // Проверяем параметр URL (?lang=)
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            
+            // Проверяем сохраненный язык
+            const savedLang = localStorage.getItem('vinylLang');
+            
+            // Определяем язык браузера
+            const browserLang = navigator.language.slice(0, 2);
+            
+            // Устанавливаем приоритет: URL > Saved > Browser > Default (en)
+            const lang = ['en', 'sr', 'ru'].includes(urlLang) ? urlLang :
+                         savedLang || (['en', 'sr', 'ru'].includes(browserLang) ? browserLang : 'en');
+            
+            // Сохраняем выбранный язык
+            localStorage.setItem('vinylLang', lang);
+            document.documentElement.lang = lang;
+            
+            // Обновляем кнопки
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
             });
-        });
-        
-        // Адаптация языка при изменении размера окна
-        window.addEventListener('resize', function() {
+            
+            // Обновляем контент
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                el.style.display = el.dataset.lang === lang ? 
+                    (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ? 'block' : 
+                     el.classList.contains('btn') ? 'inline-block' : 'block') : 'none';
+            });
+            
+            // Обновляем все ссылки на сайте
+            document.querySelectorAll('a:not([href^="#"])').forEach(a => {
+                const url = new URL(a.href);
+                url.searchParams.set('lang', lang);
+                a.href = url.toString();
+            });
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
             handleLanguage();
+            
+            // Мобильное меню
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mainNav = document.getElementById('mainNav');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                mainNav.classList.toggle('active');
+            });
+            
+            // Закрытие меню при клике на ссылку
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', function() {
+                    mainNav.classList.remove('active');
+                });
+            });
+            
+            // Слушатель изменения языка
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const lang = this.dataset.lang;
+                    const url = new URL(window.location);
+                    url.searchParams.set('lang', lang);
+                    window.history.pushState({}, '', url);
+                    handleLanguage();
+                });
+            });
+            
+            // Слушатель изменения размера окна
+            window.addEventListener('resize', handleLanguage);
+            
+            // Случайные изображения для раздела "О нас"
+            const aboutImages = [
+                'images/about.png',
+                'images/about2.png',
+                'images/about3.png'
+            ];
+            document.getElementById('random-about-image').src = 
+                aboutImages[Math.floor(Math.random() * aboutImages.length)];
+            
+            // Случайные изображения для галереи
+            const galleryImages = [
+                'images/gallery1.jpg',
+                'images/gallery2.jpg',
+                'images/gallery3.jpg',
+                'images/gallery4.jpg',
+                'images/gallery5.jpg',
+                'images/gallery6.jpg'
+            ];
+            
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            const shuffledImages = shuffleArray([...galleryImages]).slice(0, 3);
+            
+            document.getElementById('random-gallery-image-1').src = shuffledImages[0];
+            document.getElementById('random-gallery-image-2').src = shuffledImages[1];
+            document.getElementById('random-gallery-image-3').src = shuffledImages[2];
         });
     </script>
-</body>
-</html>
 </body>
 </html>
