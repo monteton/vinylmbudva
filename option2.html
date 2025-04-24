@@ -1,0 +1,843 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinyl-M | Lighting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        :root {
+            --neon-purple: #A100F2;
+            --neon-orange: #FF6F00;
+            --pastel-lavender: #E0BBE4;
+            --dark-bg: #1A1A2E;
+            --dark-bg-alt: #16213E;
+            --text-light: #F5F5F5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-light);
+            background: linear-gradient(180deg, var(--dark-bg) 0%, var(--dark-bg-alt) 100%);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Page Particles */
+        #page-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-purple);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.2s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor.glow {
+            box-shadow: 0 0 15px var(--neon-purple), 0 0 30px var(--neon-purple);
+            background: rgba(161, 0, 242, 0.2);
+        }
+
+        /* Header */
+        header {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 20px 0;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .logo img {
+            width: 50px;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            color: #FFFFFF;
+        }
+
+        .language-switcher {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .lang-btn.active {
+            background: var(--neon-orange);
+            box-shadow: 0 0 10px var(--neon-orange);
+        }
+
+        .lang-btn:hover {
+            color: var(--neon-purple);
+            transform: scale(1.1);
+        }
+
+        nav ul {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--neon-purple);
+            text-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--neon-purple);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover::after, nav ul li a.active::after {
+            width: 100%;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Page Hero */
+        .page-hero {
+            height: 25vh;
+            min-height: 200px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            z-index: 1;
+            background: linear-gradient(45deg, var(--dark-bg), var(--dark-bg-alt));
+            animation: gradientPulse 8s infinite ease-in-out;
+            padding-top: 80px;
+        }
+
+        @keyframes gradientPulse {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        .hero-content h2 {
+            font-size: 3.5rem;
+            color: #FFFFFF;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 8px;
+            -webkit-text-stroke: 1px #1A1A2E;
+            text-shadow: 0 0 10px var(--neon-purple), 0 0 20px rgba(161, 0, 242, 0.5);
+            animation: pulse 2s infinite ease-in-out;
+            opacity: 1;
+            z-index: 5;
+        }
+
+        @keyframes pulse {
+            0%, 100% { text-shadow: 0 0 10px var(--neon-purple), 0 0 20px rgba(161, 0, 242, 0.5); }
+            50% { text-shadow: 0 0 20px var(--neon-purple), 0 0 30px var(--neon-orange); }
+        }
+
+        /* Equipment List */
+        .equipment-list {
+            padding: 80px 0;
+            position: relative;
+            z-index: 5;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        #equipment-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .category {
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            visibility: visible;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .category:nth-child(1) { animation-delay: 0.2s; }
+        .category:nth-child(2) { animation-delay: 0.4s; }
+        .category:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .category:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(161, 0, 242, 0.3);
+        }
+
+        .category h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--text-light);
+            text-shadow: 0 0 5px var(--neon-purple);
+            animation: textPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { text-shadow: 0 0 5px var(--neon-purple); }
+            50% { text-shadow: 0 0 10px var(--neon-orange); }
+        }
+
+        .models {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            opacity: 1;
+        }
+
+        .model {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 5px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            color: var(--text-light);
+            position: relative;
+            opacity: 1;
+        }
+
+        .model:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        .mini-equalizer {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            width: 40px;
+            height: 15px;
+            display: none;
+            z-index: 4;
+        }
+
+        .model:hover .mini-equalizer {
+            display: block;
+        }
+
+        .mini-equalizer rect {
+            fill: url(#eq-gradient);
+            transform-origin: center bottom;
+        }
+
+        @keyframes eq-pulse {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+
+        .eq-bar-1 { animation: eq-pulse 0.8s infinite ease-in-out; }
+        .eq-bar-2 { animation: eq-pulse 0.9s infinite ease-in-out 0.1s; }
+        .eq-bar-3 { animation: eq-pulse 0.85s infinite ease-in-out 0.2s; }
+
+        /* Footer */
+        footer {
+            background: #1A1A2E;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            z-index: 5;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-copyright {
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .footer-copyright p {
+            color: #FFFFFF;
+            font-size: 1.1rem;
+            opacity: 1;
+            z-index: 10;
+            position: relative;
+        }
+
+        .footer-copyright span {
+            color: #FFFFFF;
+            opacity: 1;
+            display: none;
+        }
+
+        .footer-copyright span.active {
+            display: inline;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .models {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .hero-content h2 {
+                font-size: 2.8rem;
+            }
+
+            header, .page-hero, .equipment-list, footer {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.9);
+            }
+
+            nav.open {
+                display: block;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            nav ul li a {
+                display: block;
+                padding: 15px 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .hero-content h2 {
+                font-size: 2.2rem;
+            }
+
+            .language-switcher {
+                top: 70px;
+                left: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-hero {
+                height: 20vh;
+                min-height: 180px;
+            }
+
+            .hero-content h2 {
+                font-size: 1.8rem;
+                -webkit-text-stroke: 0.5px #1A1A2E;
+                padding: 8px 16px;
+            }
+
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+
+            .logo img {
+                width: 40px;
+            }
+
+            .language-switcher {
+                top: 60px;
+            }
+
+            .models {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-copyright p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Particles -->
+    <div id="page-particles"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="images/logo.png" alt="Vinyl-M Logo">
+                <h1>Vinyl-M</h1>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="me">ME</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                </div>
+            </div>
+            <button class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav>
+                <ul>
+                    <li><a href="index.html" data-lang="en">About</a><a href="index.html" data-lang="me" style="display:none">O nama</a><a href="index.html" data-lang="ru" style="display:none">О нас</a></li>
+                    <li><a href="gallery.html" data-lang="en">Gallery</a><a href="gallery.html" data-lang="me" style="display:none">Galerija</a><a href="gallery.html" data-lang="ru" style="display:none">Галерея</a></li>
+                    <li><a href="option1.html" data-lang="en">Sound</a><a href="option1.html" data-lang="me" style="display:none">Zvuk</a><a href="option1.html" data-lang="ru" style="display:none">Звук</a></li>
+                    <li><a href="option2.html" class="active" data-lang="en">Light</a><a href="option2.html" class="active" data-lang="me" style="display:none">Svjetlo</a><a href="option2.html" class="active" data-lang="ru" style="display:none">Свет</a></li>
+                    <li><a href="option3.html" data-lang="en">Effects</a><a href="option3.html" data-lang="me" style="display:none">Efekti</a><a href="option3.html" data-lang="ru" style="display:none">Эффекты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div id="banner-particles"></div>
+        <div class="hero-content">
+            <h2 data-lang="en">Professional Lighting Equipment</h2>
+            <h2 data-lang="me" style="display:none">Profesionalna svetlosna oprema</h2>
+            <h2 data-lang="ru" style="display:none">Профессиональное световое оборудование</h2>
+        </div>
+    </section>
+
+    <!-- Equipment List -->
+    <section class="equipment-list">
+        <div id="equipment-particles"></div>
+        <div class="container">
+            <!-- Stage Lighting -->
+            <div class="category">
+                <h3 data-lang="en">STAGE LIGHTING</h3>
+                <h3 data-lang="me" style="display:none">SCENSKO OSVJETLJENJE</h3>
+                <h3 data-lang="ru" style="display:none">СЦЕНИЧЕСКОЕ ОСВЕЩЕНИЕ</h3>
+                <div class="models">
+                    <div class="model">BEAM MOVING HEAD<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <defs>
+                            <linearGradient id="eq-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:var(--neon-purple)" />
+                                <stop offset="100%" style="stop-color:var(--neon-orange)" />
+                            </linearGradient>
+                        </defs>
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">WASH MOVING HEAD<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">SPOT MOVING HEAD<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">LED PAR<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">WHITE LIGHT (Top, Fresnel)<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">LASER SYSTEMS<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">FOLLOW SPOTS<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">STROBE LIGHTS<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">UV LIGHTS<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">PIXEL MATRIX<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                </div>
+            </div>
+
+            <!-- Truss & Support -->
+            <div class="category">
+                <h3 data-lang="en">TRUSS & SUPPORT</h3>
+                <h3 data-lang="me" style="display:none">FERME I PODRŠKA</h3>
+                <h3 data-lang="ru" style="display:none">ФЕРМЫ И ПОДДЕРЖКА</h3>
+                <div class="models">
+                    <div class="model">Aluminum Truss Systems<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Motorized Truss Lifts<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Ground Support Structures<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Lighting Stands<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Truss Bridges<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Chain Hoists<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Safety Equipment<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                </div>
+            </div>
+
+            <!-- Control Systems -->
+            <div class="category">
+                <h3 data-lang="en">CONTROL SYSTEMS</h3>
+                <h3 data-lang="me" style="display:none">SISTEMI UPRAVLJANJA</h3>
+                <h3 data-lang="ru" style="display:none">СИСТЕМЫ УПРАВЛЕНИЯ</h3>
+                <div class="models">
+                    <div class="model">DMX Controllers<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Lighting Consoles<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Wireless DMX<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Media Servers<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                    <div class="model">Timecode Synchronization<svg class="mini-equalizer" viewBox="0 0 40 15">
+                        <rect class="eq-bar-1" x="8" y="7" width="6" height="8" />
+                        <rect class="eq-bar-2" x="20" y="4" width="6" height="11" />
+                        <rect class="eq-bar-3" x="32" y="6" width="6" height="9" />
+                    </svg></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-copyright">
+            <p>© 2025 Vinyl-M. <span data-lang="en" class="active">All rights reserved.</span><span data-lang="me">Sva prava zadržana.</span><span data-lang="ru">Все права защищены.</span></p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // Log GSAP availability
+                if (!window.gsap || !window.ScrollTrigger) {
+                    console.error('GSAP or ScrollTrigger not loaded');
+                } else {
+                    console.log('GSAP and ScrollTrigger loaded successfully');
+                }
+
+                // Custom Cursor
+                const cursor = document.querySelector('.cursor');
+                document.addEventListener('mousemove', (e) => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                    cursor.classList.add('glow');
+                    setTimeout(() => cursor.classList.remove('glow'), 200);
+                });
+
+                // Language Switcher
+                function changeLanguage(lang) {
+                    console.log('Switching to language:', lang);
+                    document.querySelectorAll('.lang-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+                        if (btn.getAttribute('data-lang') === lang) {
+                            gsap.to(btn, { scale: 1.1, duration: 0.2, ease: 'power1.out', yoyo: true, repeat: 1 });
+                        }
+                    });
+                    document.querySelectorAll('[data-lang]').forEach(element => {
+                        if (element.classList.contains('lang-btn')) return;
+                        element.style.display = element.getAttribute('data-lang') === lang ? '' : 'none';
+                        element.style.opacity = '1';
+                    });
+                    // Explicitly handle footer spans
+                    document.querySelectorAll('.footer-copyright span[data-lang]').forEach(span => {
+                        span.classList.toggle('active', span.getAttribute('data-lang') === lang);
+                        console.log('Footer span:', span.getAttribute('data-lang'), 'active:', span.classList.contains('active'));
+                    });
+                }
+                document.querySelectorAll('.lang-btn').forEach(btn => {
+                    btn.addEventListener('click', () => changeLanguage(btn.getAttribute('data-lang')));
+                });
+                changeLanguage('en');
+
+                // Mobile Menu
+                const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+                const nav = document.querySelector('nav');
+                mobileMenuToggle.addEventListener('click', () => {
+                    nav.classList.toggle('open');
+                    gsap.from('nav.open ul li', { y: 20, opacity: 0, stagger: 0.1, duration: 0.5 });
+                });
+
+                // Particles in Banner
+                particlesJS('banner-particles', {
+                    particles: {
+                        number: { value: 30 },
+                        color: { value: ['#A100F2', '#FF6F00'] },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.6, random: true },
+                        size: { value: 4, random: true },
+                        move: { enable: true, speed: 3, direction: 'none', random: true }
+                    },
+                    interactivity: {
+                        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                        modes: { repulse: { distance: 150 }, push: { particles_nb: 3 } }
+                    }
+                });
+
+                // Particles in Equipment
+                particlesJS('equipment-particles', {
+                    particles: {
+                        number: { value: 80 },
+                        color: { value: ['#A100F2', '#FF6F00'] },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.4, random: true },
+                        size: { value: 3, random: true },
+                        move: { enable: true, speed: 2, direction: 'none', random: true }
+                    },
+                    interactivity: {
+                        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                        modes: { repulse: { distance: 100 }, push: { particles_nb: 4 } }
+                    }
+                });
+
+                // Page Particles
+                particlesJS('page-particles', {
+                    particles: {
+                        number: { value: 30 },
+                        color: { value: ['#A100F2', '#FF6F00'] },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.3, random: true },
+                        size: { value: 2, random: true },
+                        move: { enable: true, speed: 1, direction: 'none', random: true }
+                    },
+                    interactivity: {
+                        events: { onhover: { enable: false }, onclick: { enable: false } }
+                    }
+                });
+
+                // GSAP Animations (only for non-catalog elements)
+                gsap.from('.logo', { y: -50, opacity: 0, duration: 1, delay: 0.5 });
+                gsap.from('.language-switcher', { y: -20, opacity: 0, duration: 1, delay: 0.7 });
+                gsap.from('.hero-content h2', { scale: 0.5, opacity: 0, duration: 1.5, ease: 'back' });
+
+                // Set active menu
+                const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+                document.querySelectorAll('nav a').forEach(link => {
+                    if (link.getAttribute('href') === currentPage) {
+                        link.classList.add('active');
+                    }
+                });
+            } catch (e) {
+                console.error('Error in script:', e);
+                // Fallback for catalog
+                document.querySelectorAll('.category, .models, .model').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.visibility = 'visible';
+                    el.style.transform = 'none';
+                });
+                // Fallback for footer
+                document.querySelectorAll('.footer-copyright span[data-lang]').forEach(span => {
+                    span.style.display = span.getAttribute('data-lang') === 'en' ? 'inline' : 'none';
+                    span.style.opacity = '1';
+                    span.style.color = '#FFFFFF';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

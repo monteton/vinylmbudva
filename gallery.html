@@ -1,0 +1,1087 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinyl-M | Gallery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        :root {
+            --neon-purple: #A100F2;
+            --neon-orange: #FF6F00;
+            --pastel-lavender: #E0BBE4;
+            --dark-bg: #1A1A2E;
+            --dark-bg-alt: #16213E;
+            --text-light: #F5F5F5;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-light);
+            background: linear-gradient(180deg, var(--dark-bg) 0%, var(--dark-bg-alt) 100%);
+            overflow-x: hidden;
+            position: relative;
+        }
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        #page-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-purple);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.2s ease;
+            transform: translate(-50%, -50%);
+        }
+        .cursor.glow {
+            box-shadow: 0 0 15px var(--neon-purple), 0 0 30px var(--neon-purple);
+            background: rgba(161, 0, 242, 0.2);
+        }
+        header {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 20px 0;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+        .logo img {
+            width: 50px;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+        .logo h1 {
+            font-size: 2.5rem;
+            color: #FFFFFF;
+        }
+        .language-switcher {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+        .lang-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .lang-btn.active {
+            background: var(--neon-orange);
+            box-shadow: 0 0 10px var(--neon-orange);
+        }
+        .lang-btn:hover {
+            color: var(--neon-purple);
+            transform: scale(1.1);
+        }
+        nav ul {
+            display: flex;
+            gap: 20px;
+        }
+        nav ul li a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--neon-purple);
+            text-shadow: 0 0 10px var(--neon-purple);
+        }
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--neon-purple);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+        nav ul li a:hover::after, nav ul li a.active::after {
+            width: 100%;
+        }
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        .gallery-hero {
+            height: 25vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            z-index: 1;
+            background: linear-gradient(45deg, var(--dark-bg), var(--dark-bg-alt));
+            animation: gradientPulse 8s infinite ease-in-out;
+        }
+        @keyframes gradientPulse {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            text-align: center;
+            color: var(--text-light);
+        }
+        .hero-content h1 {
+            font-size: 4.5rem;
+            color: #FFFFFF;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 8px;
+            -webkit-text-stroke: 1px #1A1A2E;
+            text-shadow: 0 0 10px var(--neon-purple), 0 0 20px rgba(161, 0, 242, 0.5);
+            animation: pulse 2s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { text-shadow: 0 0 10px var(--neon-purple), 0 0 20px rgba(161, 0, 242, 0.5); }
+            50% { text-shadow: 0 0 20px var(--neon-purple), 0 0 30px var(--neon-orange); }
+        }
+        .gallery-section {
+            padding: 80px 0;
+            position: relative;
+            z-index: 5;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        #gallery-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            aspect-ratio: 4/3;
+            transform-style: preserve-3d;
+            display: block !important;
+            opacity: 1 !important;
+        }
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(161, 0, 242, 0.3);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        .video-section {
+            margin-top: 40px;
+        }
+        .video-section h2 {
+            font-size: 2.5rem;
+            color: var(--text-light);
+            text-shadow: 0 0 5px var(--neon-purple);
+            margin-bottom: 20px;
+            animation: textPulse 2s infinite ease-in-out;
+        }
+        @keyframes textPulse {
+            0%, 100% { text-shadow: 0 0 5px var(--neon-purple); }
+            50% { text-shadow: 0 0 10px var(--neon-orange); }
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+        .video-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            aspect-ratio: 9/16;
+            max-width: 300px;
+            margin: 0 auto;
+            transform-style: preserve-3d;
+            display: block !important;
+            opacity: 1 !important;
+        }
+        .video-item:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(161, 0, 242, 0.3);
+        }
+        .video-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .video-item:hover video {
+            transform: scale(1.1);
+        }
+        .mini-equalizer {
+            position: absolute;
+            bottom: 10px;
+            left: 20px;
+            width: 60px;
+            height: 20px;
+            display: none;
+            z-index: 4;
+        }
+        .gallery-item:hover .mini-equalizer,
+        .video-item:hover .mini-equalizer {
+            display: block;
+        }
+        .mini-equalizer rect {
+            fill: url(#eq-gradient);
+            transform-origin: center bottom;
+        }
+        @keyframes eq-pulse {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+        .eq-bar-1 { animation: eq-pulse 0.8s infinite ease-in-out; }
+        .eq-bar-2 { animation: eq-pulse 0.9s infinite ease-in-out 0.1s; }
+        .eq-bar-3 { animation: eq-pulse 0.85s infinite ease-in-out 0.2s; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(161, 0, 242, 0.8), rgba(255, 111, 0, 0.8));
+            z-index: 1000;
+            overflow: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: zoomIn 0.3s ease;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-img,
+        .modal-video {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+            border: 3px solid var(--neon-orange);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--text-light);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close-btn:hover {
+            color: var(--neon-purple);
+        }
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 3rem;
+            cursor: pointer;
+            padding: 0 20px;
+            transition: color 0.3s ease;
+            z-index: 10;
+        }
+        .nav-btn:hover {
+            color: var(--neon-orange);
+        }
+        .prev-btn {
+            left: 10px;
+        }
+        .next-btn {
+            right: 10px;
+        }
+        footer {
+            background: #1A1A2E;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            z-index: 5;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-copyright {
+            padding: 10px 0;
+            text-align: center;
+        }
+        .footer-copyright p {
+            color: #FFFFFF !important;
+            font-size: 1.1rem;
+            opacity: 1;
+            z-index: 10;
+            position: relative;
+        }
+        @media (max-width: 992px) {
+            .gallery-grid,
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            .hero-content h1 {
+                font-size: 3.5rem;
+            }
+            header, .gallery-hero, .gallery-section, footer {
+                max-width: 100%;
+            }
+        }
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.9);
+            }
+            nav.open {
+                display: block;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 0;
+            }
+            nav ul li a {
+                display: block;
+                padding: 15px 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .language-switcher {
+                top: 70px;
+                left: 10px;
+            }
+            .video-section h2 {
+                font-size: 2rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .gallery-hero {
+                height: 20vh;
+            }
+            .hero-content h1 {
+                font-size: 2rem;
+                -webkit-text-stroke: 0.5px #1A1A2E;
+                padding: 8px 16px;
+            }
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+            .logo img {
+                width: 40px;
+            }
+            .language-switcher {
+                top: 60px;
+            }
+            .gallery-grid,
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            .video-item {
+                max-width: 100%;
+            }
+            .footer-copyright p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="page-particles"></div>
+    <div class="cursor"></div>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="images/logo.png" alt="Vinyl-M Logo">
+                <h1>Vinyl-M</h1>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="me">ME</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                </div>
+            </div>
+            <button class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav>
+                <ul>
+                    <li><a href="index.html" data-lang="en">About</a><a href="index.html" data-lang="me" style="display:none">O nama</a><a href="index.html" data-lang="ru" style="display:none">О нас</a></li>
+                    <li><a href="gallery.html" class="active" data-lang="en">Gallery</a><a href="gallery.html" class="active" data-lang="me" style="display:none">Galerija</a><a href="gallery.html" class="active" data-lang="ru" style="display:none">Галерея</a></li>
+                    <li><a href="option1.html" data-lang="en">Sound</a><a href="option1.html" data-lang="me" style="display:none">Zvuk</a><a href="option1.html" data-lang="ru" style="display:none">Звук</a></li>
+                    <li><a href="option2.html" data-lang="en">Light</a><a href="option2.html" data-lang="me" style="display:none">Svjetlo</a><a href="option2.html" data-lang="ru" style="display:none">Свет</a></li>
+                    <li><a href="option3.html" data-lang="en">Effects</a><a href="option3.html" data-lang="me" style="display:none">Efekti</a><a href="option3.html" data-lang="ru" style="display:none">Эффекты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <section class="gallery-hero">
+        <div id="banner-particles"></div>
+        <div class="hero-content">
+            <h1 data-lang="en">Our Work</h1>
+            <h1 data-lang="me" style="display:none">Naši Radovi</h1>
+            <h1 data-lang="ru" style="display:none">Наши Работы</h1>
+        </div>
+    </section>
+    <section class="gallery-section">
+        <div id="gallery-particles"></div>
+        <div class="container">
+            <div class="gallery-grid">
+                <div class="gallery-item" onclick="openModal(0)">
+                    <img src="images/gallery1.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <defs>
+                            <linearGradient id="eq-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:var(--neon-purple)" />
+                                <stop offset="100%" style="stop-color:var(--neon-orange)" />
+                            </linearGradient>
+                        </defs>
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(1)">
+                    <img src="images/gallery2.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(2)">
+                    <img src="images/gallery3.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(3)">
+                    <img src="images/gallery4.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(4)">
+                    <img src="images/gallery5.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(5)">
+                    <img src="images/gallery6.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(6)">
+                    <img src="images/gallery7.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(7)">
+                    <img src="images/gallery8.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(8)">
+                    <img src="images/gallery9.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(9)">
+                    <img src="images/gallery10.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(10)">
+                    <img src="images/gallery11.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(11)">
+                    <img src="images/gallery12.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(12)">
+                    <img src="images/gallery13.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(13)">
+                    <img src="images/gallery14.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(14)">
+                    <img src="images/gallery15.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(15)">
+                    <img src="images/gallery16.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(16)">
+                    <img src="images/gallery17.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(17)">
+                    <img src="images/gallery18.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(18)">
+                    <img src="images/gallery19.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(19)">
+                    <img src="images/gallery20.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(20)">
+                    <img src="images/gallery21.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(21)">
+                    <img src="images/gallery22.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(22)">
+                    <img src="images/gallery23.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+                <div class="gallery-item" onclick="openModal(23)">
+                    <img src="images/gallery24.jpg" alt="">
+                    <svg class="mini-equalizer" viewBox="0 0 60 20">
+                        <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                        <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                        <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                    </svg>
+                </div>
+            </div>
+            <div class="video-section">
+                <h2 data-lang="en">VIDEOS</h2>
+                <h2 data-lang="me" style="display:none">VIDEO SNIMCI</h2>
+                <h2 data-lang="ru" style="display:none">ВИДЕО</h2>
+                <div class="video-grid">
+                    <div class="video-item" onclick="openModal(24)">
+                        <video src="videos/1.mp4" muted controls poster="images/poster1.png"></video>
+                        <svg class="mini-equalizer" viewBox="0 0 60 20">
+                            <defs>
+                                <linearGradient id="eq-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:var(--neon-purple)" />
+                                    <stop offset="100%" style="stop-color:var(--neon-orange)" />
+                                </linearGradient>
+                            </defs>
+                            <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                            <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                            <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                        </svg>
+                    </div>
+                    <div class="video-item" onclick="openModal(25)">
+                        <video src="videos/2.mp4" muted controls poster="images/poster2.png"></video>
+                        <svg class="mini-equalizer" viewBox="0 0 60 20">
+                            <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                            <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                            <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                        </svg>
+                    </div>
+                    <div class="video-item" onclick="openModal(26)">
+                        <video src="videos/3.mp4" muted controls poster="images/poster3.png"></video>
+                        <svg class="mini-equalizer" viewBox="0 0 60 20">
+                            <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                            <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                            <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                        </svg>
+                    </div>
+                    <div class="video-item" onclick="openModal(27)">
+                        <video src="videos/4.mp4" muted controls poster="images/poster4.png"></video>
+                        <svg class="mini-equalizer" viewBox="0 0 60 20">
+                            <rect class="eq-bar-1" x="10" y="10" width="8" height="10" />
+                            <rect class="eq-bar-2" x="26" y="5" width="8" height="15" />
+                            <rect class="eq-bar-3" x="42" y="8" width="8" height="12" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div id="imageModal" class="modal">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <span class="nav-btn prev-btn" onclick="navigate(-1)">❮</span>
+        <span class="nav-btn next-btn" onclick="navigate(1)">❯</span>
+        <div class="modal-content">
+            <img id="modalImage" class="modal-img" src="" alt="" style="display: none;">
+            <video id="modalVideo" class="modal-video" controls autoplay style="display: none;"></video>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-copyright">
+            <p>© 2025 Vinyl-M. <span data-lang="en" class="active">All rights reserved.</span><span data-lang="me" style="display:none">Sva prava zadržana.</span><span data-lang="ru" style="display:none">Все права защищены.</span></p>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                if (!window.gsap || !window.ScrollTrigger) {
+                    console.error('GSAP or ScrollTrigger not loaded');
+                } else {
+                    console.log('GSAP and ScrollTrigger loaded successfully');
+                }
+                const cursor = document.querySelector('.cursor');
+                document.addEventListener('mousemove', (e) => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                    cursor.classList.add('glow');
+                    setTimeout(() => cursor.classList.remove('glow'), 200);
+                });
+                function changeLanguage(lang) {
+                    console.log('Switching to language:', lang);
+                    document.querySelectorAll('.lang-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+                        if (btn.getAttribute('data-lang') === lang) {
+                            gsap.to(btn, { scale: 1.1, duration: 0.2, ease: 'power1.out', yoyo: true, repeat: 1 });
+                        }
+                    });
+                    document.querySelectorAll('[data-lang]').forEach(element => {
+                        if (element.classList.contains('lang-btn')) return;
+                        element.style.display = element.getAttribute('data-lang') === lang ? '' : 'none';
+                        element.style.opacity = '1';
+                    });
+                    document.querySelectorAll('.footer-copyright span[data-lang]').forEach(span => {
+                        span.classList.toggle('active', span.getAttribute('data-lang') === lang);
+                        console.log('Footer span:', span.getAttribute('data-lang'), 'active:', span.classList.contains('active'));
+                    });
+                }
+                document.querySelectorAll('.lang-btn').forEach(btn => {
+                    btn.addEventListener('click', () => changeLanguage(btn.getAttribute('data-lang')));
+                });
+                changeLanguage('en');
+                const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+                const nav = document.querySelector('nav');
+                mobileMenuToggle.addEventListener('click', () => {
+                    nav.classList.toggle('open');
+                    gsap.from('nav.open ul li', { y: 20, opacity: 0, stagger: 0.1, duration: 0.5 });
+                });
+                let currentImageIndex = 0;
+                const galleryImages = Array.from(document.querySelectorAll('.gallery-item img')).map(img => ({ type: 'image', src: img.src }));
+                const galleryVideos = Array.from(document.querySelectorAll('.video-item video')).map(video => ({ type: 'video', src: video.src, poster: video.poster }));
+                const mediaItems = [...galleryImages, ...galleryVideos];
+                function setVideoPreview(videoElement) {
+                    console.log('Setting preview for video:', videoElement.src, 'Poster:', videoElement.poster);
+                    if (!videoElement.poster || videoElement.poster.includes('placeholder')) {
+                        videoElement.currentTime = 0;
+                        videoElement.load();
+                        videoElement.addEventListener('loadeddata', () => {
+                            console.log('Video loaded, setting to first frame:', videoElement.src);
+                            videoElement.currentTime = 0;
+                        }, { once: true });
+                        videoElement.addEventListener('error', () => {
+                            console.error('Error loading video or poster:', videoElement.src);
+                        }, { once: true });
+                    } else {
+                        const img = new Image();
+                        img.src = videoElement.poster;
+                        img.onload = () => console.log('Poster loaded successfully:', videoElement.poster);
+                        img.onerror = () => {
+                            console.warn('Poster failed to load, using first frame:', videoElement.poster);
+                            videoElement.currentTime = 0;
+                            videoElement.load();
+                        };
+                    }
+                }
+                document.querySelectorAll('.video-item video').forEach(video => {
+                    setVideoPreview(video);
+                });
+                window.openModal = function(index) {
+                    currentImageIndex = index;
+                    const modal = document.getElementById('imageModal');
+                    const modalImg = document.getElementById('modalImage');
+                    const modalVideo = document.getElementById('modalVideo');
+                    const media = mediaItems[index];
+                    console.log('Opening modal for:', media);
+                    if (media.type === 'image') {
+                        modalImg.src = media.src;
+                        modalImg.alt = '';
+                        modalImg.style.display = 'block';
+                        modalVideo.style.display = 'none';
+                        modalVideo.pause();
+                    } else {
+                        modalVideo.src = media.src;
+                        modalVideo.poster = media.poster || '';
+                        modalVideo.style.display = 'block';
+                        modalImg.style.display = 'none';
+                        setVideoPreview(modalVideo);
+                        modalVideo.play().catch(e => console.error('Autoplay failed:', e));
+                    }
+                    modal.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                };
+                window.closeModal = function() {
+                    const modal = document.getElementById('imageModal');
+                    const modalVideo = document.getElementById('modalVideo');
+                    modal.classList.remove('show');
+                    modalVideo.pause();
+                    document.body.style.overflow = 'auto';
+                };
+                window.navigate = function(direction) {
+                    currentImageIndex += direction;
+                    if (currentImageIndex >= mediaItems.length) {
+                        currentImageIndex = 0;
+                    } else if (currentImageIndex < 0) {
+                        currentImageIndex = mediaItems.length - 1;
+                    }
+                    openModal(currentImageIndex);
+                };
+                document.getElementById('imageModal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('imageModal')) {
+                        closeModal();
+                    }
+                });
+                document.addEventListener('keydown', (e) => {
+                    const modal = document.getElementById('imageModal');
+                    if (modal.classList.contains('show')) {
+                        if (e.key === 'Escape') {
+                            closeModal();
+                        } else if (e.key === 'ArrowRight') {
+                            navigate(1);
+                        } else if (e.key === 'ArrowLeft') {
+                            navigate(-1);
+                        }
+                    }
+                });
+                particlesJS('banner-particles', {
+                    particles: {
+                        number: { value: 30 },
+                        color: { value: ['#A100F2', '#FF6F00'] },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.6, random: true },
+                        size: { value: 4, random: true },
+                        move: { enable: true, speed: 3, direction: 'none', random: true }
+                    },
+                    interactivity: {
+                        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                        modes: { repulse: { distance: 150 }, push: { particles_nb: 3 } }
+                    }
+                });
+                particlesJS('gallery-particles', {
+                    particles: {
+                        number: { value: 80 },
+                        color: { value: ['#A100F2', '#FF6F00'] },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.4, random: true },
+                        size: { value: 3, random: true },
+                        move: { enable: true, speed: 2, direction: 'none', random: true }
+                    },
+                    interactivity: {
+                        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                        modes: { repulse: { distance: 100 }, push: { particles_nb: 4 } }
+                    }
+                });
+                particlesJS('page-particles', {
+                    particles: {
+                        number: { value: 30 },
+                        color: { value: ['#A100F2', '#FF6F00'] },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.3, random: true },
+                        size: { value: 2, random: true },
+                        move: { enable: true, speed: 1, direction: 'none', random: true }
+                    },
+                    interactivity: {
+                        events: { onhover: { enable: false }, onclick: { enable: false } }
+                    }
+                });
+                gsap.set('.gallery-item, .video-item', { opacity: 1, scale: 1, x: 0 });
+                gsap.set('.footer-copyright p', { opacity: 1, color: '#FFFFFF', zIndex: 10 });
+                gsap.set('.hero-content h1', { opacity: 1, zIndex: 5 });
+                gsap.from('.logo', { y: -50, opacity: 0, duration: 1, delay: 0.5 });
+                gsap.from('.language-switcher', { y: -20, opacity: 0, duration: 1, delay: 0.7 });
+                gsap.from('.hero-content h1', { scale: 0.5, opacity: 0, duration: 1.5, ease: 'back' });
+                gsap.from('.gallery-item', {
+                    scrollTrigger: { trigger: '.gallery-grid', start: 'top 80%' },
+                    scale: 0.8,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.1
+                });
+                gsap.from('.video-item', {
+                    scrollTrigger: { trigger: '.video-section', start: 'top 80%' },
+                    scale: 0.8,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.1
+                });
+                gsap.from('.video-section h2', {
+                    scrollTrigger: { trigger: '.video-section', start: 'top 80%' },
+                    y: 20,
+                    opacity: 0,
+                    duration: 0.8
+                });
+                gsap.from('.footer-copyright', {
+                    scrollTrigger: { trigger: '.footer-copyright', start: 'top 90%' },
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.8
+                });
+                const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+                document.querySelectorAll('nav a').forEach(link => {
+                    if (link.getAttribute('href') === currentPage) {
+                        link.classList.add('active');
+                    }
+                });
+            } catch (e) {
+                console.error('Error in script:', e);
+                document.querySelectorAll('.gallery-item, .video-item').forEach(el => {
+                    el.style.display = 'block';
+                    el.style.opacity = '1';
+                });
+                document.querySelectorAll('.footer-copyright p').forEach(el => {
+                    el.style.color = '#FFFFFF';
+                    el.style.opacity = '1';
+                    el.style.zIndex = '10';
+                });
+                document.querySelectorAll('.hero-content h1').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.zIndex = '5';
+                });
+            }
+        });
+    </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9344800e3c8c4532',t:'MTc0NTMxODM5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
