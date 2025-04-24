@@ -133,38 +133,6 @@
             font-size: 2.5rem;
             color: #FFFFFF;
         }
-        .language-switcher {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 8px;
-            border-radius: 8px;
-            backdrop-filter: blur(5px);
-        }
-        .lang-btn {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-        .lang-btn.active {
-            background: var(--neon-orange);
-            box-shadow: 0 0 10px var(--neon-orange);
-        }
-        .lang-btn:hover {
-            color: var(--neon-purple);
-            transform: scale(1.1);
-        }
         nav ul {
             display: flex;
             gap: 20px;
@@ -387,7 +355,7 @@
             max-height: 80vh;
             object-fit: contain;
             border: 3px solid var(--neon-orange);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            box:shadow: 0 0 30px rgba(0, 0, 0, 0.8);
         }
         .close-btn {
             position: absolute;
@@ -438,7 +406,7 @@
             position: relative;
         }
 
-        /* Mobile Styles */
+        /* Мобильные стили */
         @media (max-width: 768px) {
             .cursor {
                 display: none;
@@ -465,14 +433,6 @@
                 display: block;
                 padding: 15px 20px;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            .language-switcher {
-                bottom: 15px;
-                padding: 6px;
-            }
-            .lang-btn {
-                padding: 4px 8px;
-                font-size: 0.8rem;
             }
             .gallery-hero {
                 height: 20vh;
@@ -540,9 +500,6 @@
                 font-size: 2rem;
                 padding: 6px 12px;
             }
-            .language-switcher {
-                bottom: 10px;
-            }
             .footer-copyright p {
                 font-size: 0.9rem;
             }
@@ -563,11 +520,11 @@
             </button>
             <nav>
                 <ul>
-                    <li><a href="index.html" data-lang="en">About</a><a href="index.html" data-lang="me" style="display:none">O nama</a><a href="index.html" data-lang="ru" style="display:none">О нас</a></li>
-                    <li><a href="gallery.html" class="active" data-lang="en">Gallery</a><a href="gallery.html" class="active" data-lang="me" style="display:none">Galerija</a><a href="gallery.html" class="active" data-lang="ru" style="display:none">Галерея</a></li>
-                    <li><a href="option1.html" data-lang="en">Sound</a><a href="option1.html" data-lang="me" style="display:none">Zvuk</a><a href="option1.html" data-lang="ru" style="display:none">Звук</a></li>
-                    <li><a href="option2.html" data-lang="en">Light</a><a href="option2.html" data-lang="me" style="display:none">Svjetlo</a><a href="option2.html" data-lang="ru" style="display:none">Свет</a></li>
-                    <li><a href="option3.html" data-lang="en">Effects</a><a href="option3.html" data-lang="me" style="display:none">Efekti</a><a href="option3.html" data-lang="ru" style="display:none">Эффекты</a></li>
+                    <li><a href="index.html">About</a></li>
+                    <li><a href="gallery.html" class="active">Gallery</a></li>
+                    <li><a href="option1.html">Sound</a></li>
+                    <li><a href="option2.html">Light</a></li>
+                    <li><a href="option3.html">Effects</a></li>
                 </ul>
             </nav>
         </div>
@@ -575,16 +532,14 @@
     <section class="gallery-hero">
         <div id="banner-particles"></div>
         <div class="hero-content">
-            <h1 data-lang="en">Our Work</h1>
-            <h1 data-lang="me" style="display:none">Naši Radovi</h1>
-            <h1 data-lang="ru" style="display:none">Наши Работы</h1>
+            <h1>Our Work</h1>
         </div>
     </section>
     <section class="gallery-section">
         <div id="gallery-particles"></div>
         <div class="container">
             <div class="gallery-grid">
-                <!-- Gallery items (24 images) -->
+                <!-- Элементы галереи (24 изображения) -->
                 <div class="gallery-item" data-index="0">
                     <img src="images/gallery1.jpg" alt="">
                     <svg class="mini-equalizer" viewBox="0 0 60 20">
@@ -624,9 +579,7 @@
                 <div class="gallery-item" data-index="23"><img src="images/gallery24.jpg" alt=""><svg class="mini-equalizer" viewBox="0 0 60 20"><rect class="eq-bar-1" x="10" y="10" width="8" height="10" /><rect class="eq-bar-2" x="26" y="5" width="8" height="15" /><rect class="eq-bar-3" x="42" y="8" width="8" height="12" /></svg></div>
             </div>
             <div class="video-section">
-                <h2 data-lang="en">VIDEOS</h2>
-                <h2 data-lang="me" style="display:none">VIDEO SNIMCI</h2>
-                <h2 data-lang="ru" style="display:none">ВИДЕО</h2>
+                <h2>VIDEOS</h2>
                 <div class="video-grid">
                     <div class="video-item" data-index="24">
                         <video src="videos/1.mp4" muted controls poster="images/poster1.png"></video>
@@ -658,28 +611,23 @@
             <video id="modalVideo" class="modal-video" controls autoplay style="display: none;"></video>
         </div>
     </div>
-    <div class="language-switcher">
-        <button class="lang-btn active" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="me">ME</button>
-        <button class="lang-btn" data-lang="ru">RU</button>
-    </div>
     <footer>
         <div class="footer-copyright">
-            <p>© 2025 Vinyl-M. <span data-lang="en" class="active">All rights reserved.</span><span data-lang="me" style="display:none">Sva prava zadržana.</span><span data-lang="ru" style="display:none">Все права защищены.</span></p>
+            <p>© 2025 Vinyl-M. All rights reserved.</p>
         </div>
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             try {
-                // Device Detection
+                // Обнаружение устройства
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
-                // Logo Animation (reused from index.html)
+                // Анимация логотипа
                 gsap.from('.logo img', { scale: 0.5, opacity: 0, duration: 1, ease: 'elastic.out(1, 0.3)', clearProps: 'all' });
                 gsap.from('.logo h1', { y: 20, opacity: 0, duration: 1, delay: 0.3, clearProps: 'all' });
                 gsap.to('.logo', { scale: 1.1, yoyo: true, repeat: 1, duration: 0.5, delay: 1, clearProps: 'all' });
 
-                // Cursor (Desktop Only)
+                // Курсор (только для десктопа)
                 if (!isMobile) {
                     const cursor = document.querySelector('.cursor');
                     document.addEventListener('mousemove', (e) => {
@@ -690,25 +638,7 @@
                     });
                 }
 
-                // Language Switcher
-                function changeLanguage(lang) {
-                    document.querySelectorAll('.lang-btn').forEach(btn => {
-                        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
-                        if (btn.getAttribute('data-lang') === lang) {
-                            gsap.to(btn, { scale: 1.1, duration: 0.2, ease: 'power1.out', yoyo: true, repeat: 1 });
-                        }
-                    });
-                    document.querySelectorAll('[data-lang]').forEach(element => {
-                        if (element.classList.contains('lang-btn')) return;
-                        element.style.display = element.getAttribute('data-lang') === lang ? '' : 'none';
-                    });
-                }
-                document.querySelectorAll('.lang-btn').forEach(btn => {
-                    btn.addEventListener('click', () => changeLanguage(btn.getAttribute('data-lang')));
-                });
-                changeLanguage('en');
-
-                // Mobile Menu
+                // Мобильное меню
                 const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
                 const nav = document.querySelector('nav');
                 mobileMenuToggle.addEventListener('click', () => {
@@ -716,13 +646,13 @@
                     gsap.from('nav.open ul li', { y: 20, opacity: 0, stagger: 0.1, duration: 0.5, clearProps: 'all' });
                 });
 
-                // Media Items
+                // Медиа-элементы
                 let currentImageIndex = 0;
                 const galleryImages = Array.from(document.querySelectorAll('.gallery-item img')).map(img => ({ type: 'image', src: img.src }));
                 const galleryVideos = Array.from(document.querySelectorAll('.video-item video')).map(video => ({ type: 'video', src: video.src, poster: video.poster }));
                 const mediaItems = [...galleryImages, ...galleryVideos];
 
-                // Video Preview
+                // Превью видео
                 function setVideoPreview(videoElement) {
                     if (!videoElement.poster || videoElement.poster.includes('placeholder')) {
                         videoElement.currentTime = 0;
@@ -741,7 +671,7 @@
                 }
                 document.querySelectorAll('.video-item video').forEach(video => setVideoPreview(video));
 
-                // Modal Functions
+                // Функции модального окна
                 window.openModal = function(index) {
                     currentImageIndex = index;
                     const modal = document.getElementById('imageModal');
@@ -784,7 +714,7 @@
                     openModal(currentImageIndex);
                 };
 
-                // Click Handlers
+                // Обработчики кликов
                 document.querySelectorAll('.gallery-item, .video-item').forEach(item => {
                     item.addEventListener('click', () => {
                         const index = parseInt(item.getAttribute('data-index'));
@@ -811,7 +741,7 @@
                     }
                 });
 
-                // Swipe Functionality (Mobile Only)
+                // Свайпы (только для мобильных)
                 if (isMobile) {
                     const modal = document.getElementById('imageModal');
                     const hammer = new Hammer(modal);
@@ -871,9 +801,8 @@
                     }
                 });
 
-                // GSAP Animations
+                // GSAP анимации
                 gsap.set('.gallery-item, .video-item', { display: 'block', opacity: 1 });
-                gsap.from('.language-switcher', { y: 20, opacity: 0, duration: 1, delay: 0.7, clearProps: 'all' });
                 gsap.from('.hero-content h1', { scale: 0.5, opacity: 0, duration: 1.5, ease: 'back', clearProps: 'all' });
                 gsap.from('.gallery-item', {
                     scrollTrigger: { trigger: '.gallery-grid', start: 'top 90%' },
@@ -906,7 +835,7 @@
                     clearProps: 'all'
                 });
 
-                // Active Menu
+                // Активное меню
                 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
                 document.querySelectorAll('nav a').forEach(link => {
                     if (link.getAttribute('href') === currentPage) {
@@ -914,7 +843,7 @@
                     }
                 });
             } catch (e) {
-                console.error('Error in script:', e);
+                console.error('Ошибка в скрипте:', e);
                 document.querySelectorAll('.gallery-item, .video-item').forEach(el => {
                     el.style.display = 'block';
                     el.style.opacity = '1';
